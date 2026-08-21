@@ -705,7 +705,28 @@ const $modalProfileClose = document.getElementById('modalProfileClose');
 const $btnProfileCloseBottom = document.getElementById('btnProfileCloseBottom');
 
 function openProfileModal() {
-  if ($modalProfileBackdrop) $modalProfileBackdrop.classList.add('show');
+  if ($modalProfileBackdrop) {
+    // Populate dynamic user data if available
+    const $name = document.getElementById('profModalName');
+    const $nip = document.getElementById('profModalNip');
+    const $badge = document.getElementById('profModalRoleBadge');
+    const $status = document.getElementById('profModalStatus');
+    const $nuptk = document.getElementById('profModalNuptk');
+    const $school = document.getElementById('profModalSchool');
+    const $email = document.getElementById('profModalEmail');
+    const $phone = document.getElementById('profModalPhone');
+
+    if ($name && USER.name) $name.textContent = USER.name;
+    if ($nip && USER.nip) $nip.textContent = 'NIP: ' + USER.nip;
+    if ($badge && USER.mapel) $badge.innerHTML = USER.mapel;
+    if ($status && USER.status) $status.textContent = USER.status;
+    if ($nuptk && USER.nuptk) $nuptk.textContent = USER.nuptk;
+    if ($school && USER.school) $school.textContent = USER.school;
+    if ($email && USER.email) $email.textContent = USER.email;
+    if ($phone && USER.phone) $phone.textContent = USER.phone;
+
+    $modalProfileBackdrop.classList.add('show');
+  }
 }
 
 function closeProfileModal() {

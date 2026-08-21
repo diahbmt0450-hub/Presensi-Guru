@@ -210,22 +210,62 @@ loginForm.addEventListener('submit', function (e) {
   btnLogin.classList.add('loading');
   btnLogin.disabled = true;
 
-  /*
-   * ────────────────────────────────────────────────────────────
-   * DEMO: Simulate authentication (replace with real API call)
-   * ────────────────────────────────────────────────────────────
-   */
-  const DEMO_ACCOUNTS = {
-    'admin':         { pass: 'admin123',   role: 'Admin',         redirect: 'dashboard-admin.html' },
-    'guru':          { pass: 'guru123',    role: 'Guru',          redirect: 'dashboard-guru.html'  },
-    'kepala_sekolah':{ pass: 'kepala123',  role: 'Kepala Sekolah',redirect: 'dashboard-kepala.html'},
-    'diah':          { pass: '1234',       role: 'Admin',         redirect: 'dashboard-admin.html' },
-  };
+  /* ── 3 AKUN RESMI GURU UNTUK LOGIN DASHBOARD ── */
+  const GURU_ACCOUNTS = [
+    {
+      usernames: ['diah', '198904122014022003', 'diah.safitri', 'admin'],
+      pass: '1234',
+      altPass: 'guru123',
+      name: 'Ibu Diah Safitri, S.Pd',
+      nip: '19890412 201402 2 003',
+      nuptk: '4741 7676 6821 0032',
+      role: 'Guru',
+      mapel: 'Bahasa Indonesia & Wali Kelas VII-B',
+      status: 'PNS / Guru Tetap',
+      email: 'diah.safitri@sekolah.sch.id',
+      phone: '+62 812-3456-7890',
+      school: 'SMP Negeri 1 Surabaya',
+      photo: 'assets/img/profile-diah.jpg',
+      redirect: 'dashboard-guru.html'
+    },
+    {
+      usernames: ['fauzi', '198506152010011012', 'ahmad.fauzi'],
+      pass: '1234',
+      altPass: 'guru123',
+      name: 'Bpk. Ahmad Fauzi, M.Pd',
+      nip: '19850615 201001 1 012',
+      nuptk: '5832 8841 9912 0019',
+      role: 'Guru',
+      mapel: 'Matematika & Pembina OSIS',
+      status: 'PNS / Guru Tetap',
+      email: 'ahmad.fauzi@sekolah.sch.id',
+      phone: '+62 813-8877-6655',
+      school: 'SMP Negeri 1 Surabaya',
+      photo: 'assets/img/profile-diah.jpg',
+      redirect: 'dashboard-guru.html'
+    },
+    {
+      usernames: ['siti', '199208202019032018', 'siti.nurhaliza', 'guru'],
+      pass: '1234',
+      altPass: 'guru123',
+      name: 'Ibu Siti Nurhaliza, S.Si',
+      nip: '19920820 201903 2 018',
+      nuptk: '6921 7732 4410 0045',
+      role: 'Guru',
+      mapel: 'Ilmu Pengetahuan Alam (IPA)',
+      status: 'PPPK',
+      email: 'siti.nurhaliza@sekolah.sch.id',
+      phone: '+62 821-9988-1122',
+      school: 'SMP Negeri 1 Surabaya',
+      photo: 'assets/img/profile-diah.jpg',
+      redirect: 'dashboard-guru.html'
+    }
+  ];
 
+  setTimeout(function () {
     const rawUsername = usernameEl.value.trim();
     const username = rawUsername.toLowerCase();
     const password = passwordEl.value;
-    const account  = DEMO_ACCOUNTS[username];
 
     btnLogin.classList.remove('loading');
     btnLogin.disabled = false;
@@ -246,6 +286,14 @@ loginForm.addEventListener('submit', function (e) {
         sessionStorage.setItem('presensi_user', JSON.stringify({
           username: matchedRegistered.nip,
           name:     matchedRegistered.name,
+          nip:      matchedRegistered.nip,
+          nuptk:    matchedRegistered.nuptk,
+          mapel:    matchedRegistered.mapel,
+          status:   matchedRegistered.status,
+          email:    matchedRegistered.email,
+          phone:    matchedRegistered.phone,
+          school:   matchedRegistered.school,
+          photo:    matchedRegistered.photo,
           role:     'Guru',
           loginAt:  new Date().toISOString()
         }));
@@ -256,23 +304,37 @@ loginForm.addEventListener('submit', function (e) {
       }
     }
 
-    if (account && account.pass === password) {
-      showAlert('Login berhasil! Mengarahkan ke dashboard...', 'success');
-      /* Store session info */
+    // Match 3 Official Guru Accounts
+    const matchedGuru = GURU_ACCOUNTS.find(function (g) {
+      const cleanUser = rawUsername.replace(/\s+/g, '').toLowerCase();
+      return g.usernames.some(u => u.toLowerCase() === username || u.replace(/\s+/g, '') === cleanUser);
+    });
+
+    if (matchedGuru && (matchedGuru.pass === password || matchedGuru.altPass === password)) {
+      showAlert(`Selamat datang, ${matchedGuru.name}! Mengarahkan ke dashboard...`, 'success');
       sessionStorage.setItem('presensi_user', JSON.stringify({
-        username: username,
-        role:     account.role,
+        username: matchedGuru.usernames[0],
+        name:     matchedGuru.name,
+        nip:      matchedGuru.nip,
+        nuptk:    matchedGuru.nuptk,
+        mapel:    matchedGuru.mapel,
+        status:   matchedGuru.status,
+        email:    matchedGuru.email,
+        phone:    matchedGuru.phone,
+        school:   matchedGuru.school,
+        photo:    matchedGuru.photo,
+        role:     matchedGuru.role,
         loginAt:  new Date().toISOString()
       }));
-      /* Redirect after short delay */
       setTimeout(function () {
-        window.location.href = account.redirect === 'dashboard-admin.html' ? 'dashboard-guru.html' : account.redirect;
+        window.location.href = matchedGuru.redirect;
       }, 1200);
-    } else {
-      showAlert('Username / NIP atau password salah. Silakan coba lagi.');
-      passwordEl.value = '';
-      passwordEl.focus();
+      return;
     }
+
+    showAlert('Username / NIP atau password salah. Silakan coba lagi.');
+    passwordEl.value = '';
+    passwordEl.focus();
   }, 1600);
 });
 
