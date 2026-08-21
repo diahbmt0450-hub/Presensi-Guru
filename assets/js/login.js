@@ -210,10 +210,26 @@ loginForm.addEventListener('submit', function (e) {
   btnLogin.classList.add('loading');
   btnLogin.disabled = true;
 
-  /* ── 3 AKUN RESMI GURU UNTUK LOGIN DASHBOARD ── */
-  const GURU_ACCOUNTS = [
+  /* ── 3 AKUN RESMI GURU & 1 AKUN ADMIN UNTUK LOGIN ── */
+  const SYSTEM_ACCOUNTS = [
     {
-      usernames: ['diah', '198904122014022003', 'diah.safitri', 'admin'],
+      usernames: ['admin', 'administrator', 'admin.sekolah'],
+      pass: 'admin123',
+      altPass: '1234',
+      name: 'Ibu Diah Safitri, S.Pd',
+      nip: '19890412 201402 2 003',
+      nuptk: '4741 7676 6821 0032',
+      role: 'Admin',
+      mapel: 'Administrator Sistem Presensi',
+      status: 'PNS / Administrator',
+      email: 'admin.presensi@smpn1.sch.id',
+      phone: '+62 812-3456-7890',
+      school: 'SMP Negeri 1 Surabaya',
+      photo: 'assets/img/profile-diah.jpg',
+      redirect: 'dashboard-admin.html'
+    },
+    {
+      usernames: ['diah', '198904122014022003', 'diah.safitri'],
       pass: '1234',
       altPass: 'guru123',
       name: 'Ibu Diah Safitri, S.Pd',
@@ -259,6 +275,22 @@ loginForm.addEventListener('submit', function (e) {
       school: 'SMP Negeri 1 Surabaya',
       photo: 'assets/img/profile-diah.jpg',
       redirect: 'dashboard-guru.html'
+    },
+    {
+      usernames: ['kepala', 'kepala_sekolah', 'kepsek', '196803151994121002', 'bambang.sudarsono'],
+      pass: 'kepala123',
+      altPass: '1234',
+      name: 'Dr. H. Bambang Sudarsono, M.Pd',
+      nip: '19680315 199412 1 002',
+      nuptk: '3412 7564 8901 0015',
+      role: 'Kepala Sekolah',
+      mapel: 'Kepala Sekolah (Pimpinan Satuan Pendidikan)',
+      status: 'PNS / Pembina Utama Madya (IV/c)',
+      email: 'kepsek@smpn1surabaya.sch.id',
+      phone: '+62 811-9988-7766',
+      school: 'SMP Negeri 1 Surabaya',
+      photo: 'assets/img/profile-diah.jpg',
+      redirect: 'dashboard-kepala.html'
     }
   ];
 
@@ -279,6 +311,10 @@ loginForm.addEventListener('submit', function (e) {
     if (matchedRegistered) {
       if (matchedRegistered.accountStatus === 'pending_approval') {
         showAlert(`⚠️ Akun Anda (${matchedRegistered.name}) sedang dalam proses verifikasi dan belum di-ACC oleh Admin Sekolah. Silakan tunggu konfirmasi Administrator.`, 'error');
+        return;
+      }
+      if (matchedRegistered.accountStatus === 'inactive') {
+        showAlert(`⚠️ Akun Anda (${matchedRegistered.name}) telah dinonaktifkan oleh Administrator Sekolah. Akses login ditutup.`, 'error');
         return;
       }
       if (matchedRegistered.password === password) {
@@ -304,32 +340,48 @@ loginForm.addEventListener('submit', function (e) {
       }
     }
 
-    // Match 3 Official Guru Accounts
-    const matchedGuru = GURU_ACCOUNTS.find(function (g) {
+    // Match Official Guru & Admin Accounts
+    const matchedAccount = SYSTEM_ACCOUNTS.find(function (g) {
       const cleanUser = rawUsername.replace(/\s+/g, '').toLowerCase();
       return g.usernames.some(u => u.toLowerCase() === username || u.replace(/\s+/g, '') === cleanUser);
     });
 
-    if (matchedGuru && (matchedGuru.pass === password || matchedGuru.altPass === password)) {
-      showAlert(`Selamat datang, ${matchedGuru.name}! Mengarahkan ke dashboard...`, 'success');
-      sessionStorage.setItem('presensi_user', JSON.stringify({
-        username: matchedGuru.usernames[0],
-        name:     matchedGuru.name,
-        nip:      matchedGuru.nip,
-        nuptk:    matchedGuru.nuptk,
-        mapel:    matchedGuru.mapel,
-        status:   matchedGuru.status,
-        email:    matchedGuru.email,
-        phone:    matchedGuru.phone,
-        school:   matchedGuru.school,
-        photo:    matchedGuru.photo,
-        role:     matchedGuru.role,
-        loginAt:  new Date().toISOString()
-      }));
-      setTimeout(function () {
-        window.location.href = matchedGuru.redirect;
-      }, 1200);
-      return;
+    if (matchedAccount) {
+      // Check if account has been deleted or deactivated in registered_teachers (only for regular Guru accounts)
+      const currentTeachers = JSON.parse(localStorage.getItem('registered_teachers') || 'null');
+      if (currentTeachers && matchedAccount.role === 'Guru') {
+        const found = currentTeachers.find(t => t.nip === matchedAccount.nip);
+        if (!found) {
+          showAlert('⚠️ Akun ini telah dihapus dari sistem presensi oleh Administrator.', 'error');
+          return;
+        }
+        if (found.accountStatus === 'inactive') {
+          showAlert(`⚠️ Akun Anda (${matchedAccount.name}) sedang dinonaktifkan oleh Administrator. Akses login ditutup.`, 'error');
+          return;
+        }
+      }
+
+      if (matchedAccount.pass === password || matchedAccount.altPass === password) {
+        showAlert(`Selamat datang, ${matchedAccount.name}! Mengarahkan ke dashboard...`, 'success');
+        sessionStorage.setItem('presensi_user', JSON.stringify({
+          username: matchedAccount.usernames[0],
+          name:     matchedAccount.name,
+          nip:      matchedAccount.nip,
+          nuptk:    matchedAccount.nuptk,
+          mapel:    matchedAccount.mapel,
+          status:   matchedAccount.status,
+          email:    matchedAccount.email,
+          phone:    matchedAccount.phone,
+          school:   matchedAccount.school,
+          photo:    matchedAccount.photo,
+          role:     matchedAccount.role,
+          loginAt:  new Date().toISOString()
+        }));
+        setTimeout(function () {
+          window.location.href = matchedAccount.redirect;
+        }, 1200);
+        return;
+      }
     }
 
     showAlert('Username / NIP atau password salah. Silakan coba lagi.');

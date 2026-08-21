@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Kepala Sekolah | SMP Negeri 1 Surabaya</title>
+  <meta name="description" content="Dashboard Eksekutif Kepala Sekolah - Disposisi Persetujuan Izin/Dinas, Monitoring Kehadiran Guru, dan Laporan Kinerja." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/kepala.css" />
+</head>
+<body>
+
+  <div class="kepala-app-layout">
+    
+    <!-- ═════════════════════════════════════════
+         SIDEBAR KEPALA SEKOLAH
+    ═════════════════════════════════════════ -->
+    <aside class="kepala-sidebar" aria-label="Sidebar Navigasi Kepala Sekolah">
+      
+      <!-- Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">SMPN 1 Surabaya</span>
+          <span class="brand-subtitle">Portal Kepala Sekolah</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Eksekutif & Utama</div>
+        
+        <button class="nav-item active" data-page="pageOverview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Beranda Eksekutif</span>
+        </button>
+
+        <button class="nav-item" data-page="pagePersetujuan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Disposisi & Persetujuan (ACC)</span>
+          <span class="nav-badge-pill" id="badgeKepsekIzinCount">2</span>
+        </button>
+
+        <div class="nav-section-label">Pengawasan & Kinerja</div>
+
+        <button class="nav-item" data-page="pageLaporan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Laporan & Rekapitulasi Presensi</span>
+        </button>
+
+        <div class="nav-section-label">Manajemen Satuan</div>
+
+        <button class="nav-item" data-page="pageSupervisi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Agenda Supervisi & Kegiatan</span>
+        </button>
+
+        <button class="nav-item" data-page="pageProfil">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Profil Pimpinan & TTD Digital</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer User Pill -->
+      <div class="sidebar-footer">
+        <div class="kepsek-mini-profile">
+          <img src="assets/img/profile-diah.jpg" class="kepsek-mini-avatar" alt="Foto Kepala Sekolah" />
+          <div class="kepsek-mini-meta">
+            <div class="kepsek-mini-name">Dr. H. Bambang S., M.Pd</div>
+            <div class="kepsek-mini-role">Kepala Sekolah</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═════════════════════════════════════════
+         MAIN CONTENT AREA
+    ═════════════════════════════════════════ -->
+    <main class="kepala-main-content">
+      
+      <!-- Top Header -->
+      <header class="kepala-header">
+        <div class="header-left">
+          <div class="header-title-box">
+            <h1 id="headerPageTitle">Beranda Eksekutif & Ringkasan Kehadiran</h1>
+            <p id="realtimeDateTime">Memuat tanggal & waktu...</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="header-badge-status">
+            <span class="status-dot"></span>
+            <span>Tahun Ajaran 2026/2027 — Semester Ganjil</span>
+          </div>
+
+          <button class="btn-welcome-gold" style="padding: 7px 14px; font-size: 12px;" onclick="exportMonthlyExecutiveReport()">
+            🖨️ Cetak Rekap Bulan Ini
+          </button>
+
+          <!-- Notification Bell -->
+          <button class="btn-header-action" id="btnKepsekNotif" title="Notifikasi Persetujuan Masuk" onclick="document.querySelector('.nav-item[data-page=pagePersetujuan]').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notif-badge-bubble" id="headerKepsekNotifBadge">2</span>
+          </button>
+
+          <!-- Profile Pill -->
+          <div class="header-profile-pill" onclick="document.querySelector('.nav-item[data-page=pageProfil]').click()">
+            <img src="assets/img/profile-diah.jpg" class="header-avatar" alt="Foto Dr. H. Bambang Sudarsono, M.Pd" />
+            <div class="header-profile-text">
+              <span class="header-name">Dr. H. Bambang S., M.Pd</span>
+              <span class="header-role">Kepala SMPN 1 Surabaya</span>
+            </div>
+          </div>
+
+          <!-- Logout Button -->
+          <button class="btn-header-action" id="btnKepsekLogout" title="Keluar / Logout" style="color:#ef4444;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ═════════════════════════════════════════
+           PAGE 1: BERANDA EKSEKUTIF (OVERVIEW)
+      ═════════════════════════════════════════ -->
+      <section class="kepala-page active" id="pageOverview">
+        
+        <!-- Welcome Banner -->
+        <div class="executive-welcome-card">
+          <div class="welcome-text-side">
+            <h2>Selamat Datang, Bapak Kepala Sekolah 🏛️</h2>
+            <p>
+              Portal Pengawasan Eksekutif & Persetujuan Resmi Presensi Tenaga Pendidik SMP Negeri 1 Surabaya. Pantau kedisiplinan guru, setujui izin & dinas secara digital, dan evaluasi capaian kehadiran harian.
+            </p>
+          </div>
+          <div class="welcome-actions-side">
+            <button class="btn-welcome-gold" onclick="document.querySelector('.nav-item[data-page=pagePersetujuan]').click()">
+              ✍️ Tinjau Permohonan Izin / Dinas
+            </button>
+            <button class="btn-welcome-outline" onclick="document.querySelector('.nav-item[data-page=pageLaporan]').click()">
+              📑 Laporan & Rekapitulasi
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Stats Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Total Tenaga Pendidik</span>
+              <div class="kpi-icon-box" style="background:#f5f3ff; color:#7c3aed;">👥</div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="kpiTotalTeachers">48 Pegawai</span>
+            </div>
+            <span class="kpi-sub">PNS, PPPK & Guru Tetap</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Tingkat Kehadiran Hari Ini</span>
+              <div class="kpi-icon-box" style="background:#ecfdf5; color:#059669;">📈</div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" id="kpiAttendanceRate">95.8%</span>
+              <span class="kpi-badge" style="background:#ecfdf5; color:#059669;">Optimal</span>
+            </div>
+            <span class="kpi-sub" id="kpiPresentDetail">46 dari 48 Guru Hadir</span>
+          </div>
+
+          <div class="kpi-card" style="border-color:#e9d5ff; background:#faf5ff;">
+            <div class="kpi-header">
+              <span class="kpi-title" style="color:#7c3aed;">Menunggu ACC Kepsek</span>
+              <div class="kpi-icon-box" style="background:#7c3aed; color:#ffffff;">✍️</div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value" style="color:#7c3aed;" id="kpiPendingCount">2</span>
+              <span class="kpi-badge" style="background:#fef3c7; color:#b45309;">Perlu Tindakan</span>
+            </div>
+            <span class="kpi-sub">Permohonan Izin / Dinas Luar</span>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Status KBM Kelas</span>
+              <div class="kpi-icon-box" style="background:#eff6ff; color:#2563eb;">🏫</div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value">100%</span>
+              <span class="kpi-badge" style="background:#eff6ff; color:#2563eb;">Lancar</span>
+            </div>
+            <span class="kpi-sub">27 Rombongan Belajar Terisi</span>
+          </div>
+        </div>
+
+        <!-- 2 Column Section: Chart Distribution & Pending Approvals -->
+        <div class="executive-two-cols">
+          
+          <!-- Left: Attendance Breakdown Summary -->
+          <div class="kepala-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-header-title">📊 Distribusi Kehadiran Guru Hari Ini</h3>
+                <span class="card-header-sub">Status absensi seluruh tenaga pendidik sesi pagi</span>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:#059669; background:#ecfdf5; padding:4px 10px; border-radius:6px;">Realtime GPS & Kamera</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:20px;">
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:14px; text-align:center;">
+                <div style="font-size:11px; font-weight:700; color:#166534;">HADIR TEPAT WAKTU</div>
+                <div style="font-size:22px; font-weight:800; color:#15803d; margin:4px 0;">44</div>
+                <div style="font-size:11px; color:#166534;">91.6% Guru</div>
+              </div>
+              <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:14px; text-align:center;">
+                <div style="font-size:11px; font-weight:700; color:#92400e;">TERLAMBAT</div>
+                <div style="font-size:22px; font-weight:800; color:#b45309; margin:4px 0;">2</div>
+                <div style="font-size:11px; color:#92400e;">&lt; 15 Menit</div>
+              </div>
+              <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:14px; text-align:center;">
+                <div style="font-size:11px; font-weight:700; color:#1e40af;">DINAS / IZIN</div>
+                <div style="font-size:22px; font-weight:800; color:#1d4ed8; margin:4px 0;">2</div>
+                <div style="font-size:11px; color:#1e40af;">Ada Surat Tugas</div>
+              </div>
+              <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:14px; text-align:center;">
+                <div style="font-size:11px; font-weight:700; color:#991b1b;">ALPHA / TANPA KET</div>
+                <div style="font-size:22px; font-weight:800; color:#dc2626; margin:4px 0;">0</div>
+                <div style="font-size:11px; color:#991b1b;">0% Disiplin</div>
+              </div>
+            </div>
+
+            <!-- Discipline Progress Bar -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; margin-bottom:8px;">
+                <span>Indeks Efektivitas & Kepatuhan Presensi Sekolah</span>
+                <span style="color:#059669;">95.8% (Kategori Unggul)</span>
+              </div>
+              <div style="height:10px; background:#e2e8f0; border-radius:999px; overflow:hidden; display:flex;">
+                <div style="width:91.6%; background:#059669;"></div>
+                <div style="width:4.2%; background:#f59e0b;"></div>
+                <div style="width:4.2%; background:#2563eb;"></div>
+              </div>
+              <div style="display:flex; gap:16px; margin-top:8px; font-size:11px; color:#64748b;">
+                <span>🟢 Hadir: 91.6%</span>
+                <span>🟡 Terlambat: 4.2%</span>
+                <span>🔵 Dinas Luar: 4.2%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Pending Approval Quick Actions -->
+          <div class="kepala-card" style="border-color:#ddd6fe;">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-header-title">✍️ Disposisi Menunggu ACC Anda</h3>
+                <span class="card-header-sub">Telah diverifikasi berkas oleh admin</span>
+              </div>
+              <button class="btn-kepsek-doc" style="font-size:11.5px;" onclick="document.querySelector('.nav-item[data-page=pagePersetujuan]').click()">
+                Lihat Semua
+              </button>
+            </div>
+
+            <!-- Approval Items Container -->
+            <div class="approval-list-wrapper" id="overviewPendingList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ═════════════════════════════════════════
+           PAGE 2: DISPOSISI & PERSETUJUAN (ACC)
+      ═════════════════════════════════════════ -->
+      <section class="kepala-page" id="pagePersetujuan">
+        
+        <div style="background:#faf5ff; border:1.5px solid #c084fc; border-radius:12px; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:14px;">
+          <div style="font-size:28px;">🏛️</div>
+          <div>
+            <h3 style="font-size:15px; font-weight:800; color:#581c87; margin-bottom:2px;">Wewenang Prerogatif Kepala Sekolah</h3>
+            <p style="font-size:12.5px; color:#6b21a8; line-height:1.4;">
+              Sebagai Kepala Sekolah, Anda memiliki hak penuh untuk memeriksa kelengkapan berkas fisik/digital, mengunduh lembar arsip 2 halaman, dan memberikan <b>Persetujuan Resmi (ACC)</b> atau <b>Penolakan</b> terhadap permohonan izin/dinas tenaga pendidik.
+            </p>
+          </div>
+        </div>
+
+        <div class="kepala-card">
+          
+          <!-- Filter Tabs -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div style="display:flex; gap:8px;">
+              <button class="filter-pill-btn active" data-filter="all" onclick="setApprovalFilter('all')" style="padding:6px 14px; border-radius:8px; font-weight:700; font-size:12.5px; border:1px solid #cbd5e1; background:#7c3aed; color:#fff; cursor:pointer;">
+                Semua Permohonan
+              </button>
+              <button class="filter-pill-btn" data-filter="pending" onclick="setApprovalFilter('pending')" style="padding:6px 14px; border-radius:8px; font-weight:700; font-size:12.5px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; cursor:pointer;">
+                ⏳ Menunggu ACC
+              </button>
+              <button class="filter-pill-btn" data-filter="approved" onclick="setApprovalFilter('approved')" style="padding:6px 14px; border-radius:8px; font-weight:700; font-size:12.5px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; cursor:pointer;">
+                ✓ Telah Di-ACC
+              </button>
+              <button class="filter-pill-btn" data-filter="rejected" onclick="setApprovalFilter('rejected')" style="padding:6px 14px; border-radius:8px; font-weight:700; font-size:12.5px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; cursor:pointer;">
+                ✕ Ditolak
+              </button>
+            </div>
+            <span style="font-size:12px; color:#64748b;">Klik <b>📄 Berkas</b> untuk melihat surat tugas / surat dokter di Halaman 2</span>
+          </div>
+
+          <!-- Table of Requests -->
+          <div class="table-responsive">
+            <table class="kepala-table">
+              <thead>
+                <tr>
+                  <th>ID Reg</th>
+                  <th>Nama Guru & NIP</th>
+                  <th>Jenis</th>
+                  <th>Rentang Tanggal</th>
+                  <th>Keperluan & Lampiran</th>
+                  <th>Status Disposisi</th>
+                  <th>Aksi Kepala Sekolah</th>
+                </tr>
+              </thead>
+              <tbody id="fullApprovalTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ═════════════════════════════════════════
+           PAGE 3: LAPORAN & REKAPITULASI PRESENSI (MONITORING & REKAP GURU)
+      ═════════════════════════════════════════ -->
+      <section class="kepala-page" id="pageLaporan">
+        
+        <div class="kepala-card">
+          
+          <!-- Header Page & Title -->
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-header-title">📑 Laporan, Rekapitulasi & Monitoring Presensi Guru</h3>
+              <span class="card-header-sub">Pantau kehadiran realtime dan cetak rekapitulasi presensi bulanan (kolektif seluruh guru atau sebagian/individu)</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-kepsek-doc" onclick="exportRekapCSV()" style="padding:8px 14px; font-size:12.5px;">
+                📊 Unduh CSV
+              </button>
+              <button class="btn-welcome-gold" onclick="exportMonthlyExecutiveReport()" style="padding:8px 16px; font-size:12.5px;">
+                🖨️ Cetak Rekapitulasi PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Filter Bar for Kepala Sekolah -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:18px; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: 200px 240px 1fr auto; gap:14px; align-items:end;">
+              
+              <!-- 1. Pilih Bulan -->
+              <div>
+                <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:6px;">
+                  📅 PILIH BULAN
+                </label>
+                <select id="rekapFilterBulan" onchange="applyRekapFilters()" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; font-weight:600; background:#fff; cursor:pointer;">
+                  <option value="Agustus 2026" selected>Agustus 2026</option>
+                  <option value="Juli 2026">Juli 2026</option>
+                  <option value="Juni 2026">Juni 2026</option>
+                  <option value="Mei 2026">Mei 2026</option>
+                  <option value="April 2026">April 2026</option>
+                  <option value="Maret 2026">Maret 2026</option>
+                  <option value="Februari 2026">Februari 2026</option>
+                  <option value="Januari 2026">Januari 2026</option>
+                </select>
+              </div>
+
+              <!-- 2. Cakupan Guru (Semua vs Sebagian / Individu) -->
+              <div>
+                <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:6px;">
+                  👥 CAKUPAN GURU
+                </label>
+                <select id="rekapFilterCakupan" onchange="handleCakupanChange()" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; font-weight:600; background:#fff; cursor:pointer;">
+                  <option value="all" selected>🌐 Seluruh Guru (Kolektif)</option>
+                  <option value="individu">👤 Pilih Guru Tertentu (Individu)</option>
+                  <option value="pns">🏛️ Guru PNS Tetap</option>
+                  <option value="pppk">📋 Guru PPPK</option>
+                  <option value="mapel_bahasa">📚 Rumpun Bahasa</option>
+                  <option value="mapel_mipa">🔬 Rumpun MIPA</option>
+                </select>
+              </div>
+
+              <!-- 3. Dynamic Dropdown: Pilih Guru Individu (Muncul jika 'individu' dipilih) -->
+              <div id="containerPilihIndividu" style="display:none;">
+                <label style="font-size:11.5px; font-weight:700; color:#7c3aed; display:block; margin-bottom:6px;">
+                  👤 NAMA GURU SPESIFIK
+                </label>
+                <select id="rekapSelectGuruIndividu" onchange="applyRekapFilters()" style="width:100%; padding:9px 12px; border-radius:8px; border:1.5px solid #7c3aed; font-size:13px; font-weight:600; background:#faf5ff; cursor:pointer;">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+
+              <!-- 4. Quick Search Name/NIP -->
+              <div id="containerSearchInput">
+                <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:6px;">
+                  🔍 CARI GURU / NIP
+                </label>
+                <input type="text" id="rekapSearchInput" oninput="applyRekapFilters()" placeholder="Ketik nama atau NIP..." style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:12.5px; background:#fff;" />
+              </div>
+
+            </div>
+
+            <!-- Dynamic Active Filter Indicator -->
+            <div style="margin-top:14px; padding-top:12px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+              <span id="rekapFilterDescriptionText" style="color:#334155; font-weight:600;">
+                Menampilkan rekap presensi untuk: <b>Seluruh Guru (Kolektif)</b> pada bulan <b>Agustus 2026</b>
+              </span>
+              <span id="rekapSummaryStatsText" style="color:#059669; font-weight:700; background:#ecfdf5; padding:3px 10px; border-radius:6px;">
+                Tingkat Kehadiran: 95.8%
+              </span>
+            </div>
+          </div>
+
+          <!-- Comprehensive Attendance & Realtime Table -->
+          <div class="table-responsive">
+            <table class="kepala-table">
+              <thead>
+                <tr>
+                  <th style="width:35px;">No</th>
+                  <th>Guru / Tenaga Pendidik</th>
+                  <th>Mata Pelajaran / Tugas</th>
+                  <th style="text-align:center; color:#059669;">Hadir</th>
+                  <th style="text-align:center; color:#d97706;">Terlambat</th>
+                  <th style="text-align:center; color:#2563eb;">Izin</th>
+                  <th style="text-align:center; color:#7c3aed;">Sakit</th>
+                  <th style="text-align:center; color:#dc2626;">Alpha</th>
+                  <th style="text-align:center;">% Disiplin</th>
+                  <th>Status Realtime Hari Ini</th>
+                  <th>Aksi Cetak</th>
+                </tr>
+              </thead>
+              <tbody id="rekapGuruTableBody">
+                <!-- Rendered dynamically via JS based on chosen month & teacher scope -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ═════════════════════════════════════════
+           PAGE 5: AGENDA SUPERVISI & KEGIATAN
+      ═════════════════════════════════════════ -->
+      <section class="kepala-page" id="pageSupervisi">
+        <div class="kepala-card">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-header-title">📅 Agenda Supervisi Akademik & Kegiatan Pimpinan</h3>
+              <span class="card-header-sub">Jadwal peninjauan kelas, rapat dinas, dan agenda luar sekolah</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:10px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="background:#7c3aed; color:#fff; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px;">SUPERVISI AKADEMIK</span>
+                <h4 style="font-size:14px; font-weight:800; margin:4px 0 2px;">Supervisi Pembelajaran Kelas VIII-A (Bahasa Indonesia)</h4>
+                <p style="font-size:12px; color:#64748b;">📅 Selasa, 25 Agustus 2026 &bull; Pukul 08.30 - 09.50 WIB &bull; Guru: Ibu Diah Safitri, S.Pd</p>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:#7c3aed;">Terjadwal</span>
+            </div>
+
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="background:#2563eb; color:#fff; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px;">RAPAT DINAS</span>
+                <h4 style="font-size:14px; font-weight:800; margin:4px 0 2px;">Rapat Koordinasi Evaluasi Kurikulum Merdeka dengan Pengawas Pembina</h4>
+                <p style="font-size:12px; color:#64748b;">📅 Kamis, 27 Agustus 2026 &bull; Pukul 13.00 WIB &bull; Ruang Pertemuan Utama SMPN 1</p>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:#2563eb;">Konfirmasi</span>
+            </div>
+
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="background:#059669; color:#fff; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px;">UPACARA</span>
+                <h4 style="font-size:14px; font-weight:800; margin:4px 0 2px;">Pembina Upacara Hari Pramuka & Penyerahan Penghargaan Siswa Berprestasi</h4>
+                <p style="font-size:12px; color:#64748b;">📅 Senin, 31 Agustus 2026 &bull; Pukul 07.00 WIB &bull; Lapangan Utama Sekolah</p>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:#059669;">Rutin</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════════════════════════════════
+           PAGE 6: PROFIL PIMPINAN & SK
+      ═════════════════════════════════════════ -->
+      <section class="kepala-page" id="pageProfil">
+        <div class="kepala-card">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-header-title">👤 Profil Pimpinan Satuan Pendidikan</h3>
+              <span class="card-header-sub">Identitas resmi, SK Pejabat, dan Tanda Tangan Digital Kepala Sekolah</span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 240px 1fr; gap:24px; align-items:start;">
+            <div style="text-align:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px;">
+              <img src="assets/img/profile-diah.jpg" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid #7c3aed; margin-bottom:12px;" alt="Foto Kepala Sekolah" />
+              <h3 style="font-size:15px; font-weight:800;">Dr. H. Bambang S., M.Pd</h3>
+              <p style="font-size:12px; color:#7c3aed; font-weight:700; margin-top:2px;">Kepala SMP Negeri 1 Surabaya</p>
+              <div style="margin-top:10px; display:inline-block; background:#ecfdf5; color:#059669; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px;">
+                🟢 Pejabat Aktif
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div style="background:#f8fafc; padding:12px 16px; border-radius:10px; border:1px solid #e2e8f0;">
+                  <div style="font-size:11px; color:#64748b; font-weight:700;">NIP RESMI</div>
+                  <div style="font-size:13.5px; font-weight:800; margin-top:2px;">19680315 199412 1 002</div>
+                </div>
+                <div style="background:#f8fafc; padding:12px 16px; border-radius:10px; border:1px solid #e2e8f0;">
+                  <div style="font-size:11px; color:#64748b; font-weight:700;">PANGKAT / GOLONGAN</div>
+                  <div style="font-size:13.5px; font-weight:800; margin-top:2px;">Pembina Utama Madya (IV/c)</div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div style="background:#f8fafc; padding:12px 16px; border-radius:10px; border:1px solid #e2e8f0;">
+                  <div style="font-size:11px; color:#64748b; font-weight:700;">SK PENGANGKATAN KEPSEK</div>
+                  <div style="font-size:13.5px; font-weight:800; margin-top:2px;">821.2/1429/436.7.1/2023</div>
+                </div>
+                <div style="background:#f8fafc; padding:12px 16px; border-radius:10px; border:1px solid #e2e8f0;">
+                  <div style="font-size:11px; color:#64748b; font-weight:700;">INSTANSI SATUAN</div>
+                  <div style="font-size:13.5px; font-weight:800; margin-top:2px;">SMP Negeri 1 Surabaya</div>
+                </div>
+              </div>
+
+              <div style="background:#faf5ff; border:1px dashed #7c3aed; border-radius:12px; padding:16px; margin-top:6px;">
+                <h4 style="font-size:13px; font-weight:800; color:#581c87; margin-bottom:4px;">🛡️ Tanda Tangan Digital & Legalisasi</h4>
+                <p style="font-size:12px; color:#6b21a8; line-height:1.4;">
+                  Seluruh lembar disposisi izin/dinas dan rekapitulasi presensi yang di-ACC melalui portal ini secara otomatis tersahkan dengan stempel resmi dan tanda tangan digital Dr. H. Bambang Sudarsono, M.Pd.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="assets/js/kepala.js"></script>
+</body>
+</html>

@@ -460,13 +460,36 @@ function renderHistory() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   EVENTS RENDER
+   EVENTS RENDER (DENGAN TITIK KOORDINAT ACARA)
 ══════════════════════════════════════════════════════════════ */
+function getActiveSchoolEvents() {
+  const local = JSON.parse(localStorage.getItem('school_events_data') || 'null');
+  if (local && local.length > 0) return local;
+  return EVENTS_DATA;
+}
+
 function renderEvents() {
   if (!$eventList) return;
   $eventList.innerHTML = '';
+  const events = getActiveSchoolEvents();
 
-  EVENTS_DATA.forEach(function (ev) {
+  // Inject event locations into SCHOOL_LOCATIONS dynamically so teachers can check in at venue
+  events.forEach(ev => {
+    if (ev.coords && ev.coords.length === 2) {
+      const alreadyExists = SCHOOL_LOCATIONS.some(loc => loc.name === ev.venue || loc.name === ev.name);
+      if (!alreadyExists) {
+        SCHOOL_LOCATIONS.push({
+          name: ev.venue || ev.name,
+          lat: ev.coords[0],
+          lng: ev.coords[1],
+          radius: ev.radius || 300,
+          address: `Lokasi Acara: ${ev.name}`
+        });
+      }
+    }
+  });
+
+  events.forEach(function (ev) {
     const el = document.createElement('div');
     el.className = 'event-item';
     el.innerHTML = `
@@ -476,14 +499,17 @@ function renderEvents() {
       </div>
       <div class="event-info">
         <div class="event-name">${ev.name}</div>
-        <div class="event-time">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          ${ev.time}
+        <div class="event-time" style="display:flex; flex-direction:column; gap:2px; margin-top:2px;">
+          <div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            ${ev.time}
+          </div>
+          ${ev.venue ? `<div style="font-size:11px; color:#059669; font-weight:700;">📍 Lokasi Presensi: ${ev.venue}</div>` : ''}
         </div>
       </div>
-      <span class="event-tag ${ev.tag}">${ev.tagLabel}</span>
+      <span class="event-tag ${ev.tag || 'wajib'}">${ev.tagLabel || 'Wajib'}</span>
     `;
     $eventList.appendChild(el);
   });
@@ -559,7 +585,7 @@ if ($modalConfirm) {
 /* ══════════════════════════════════════════════════════════════
    NOTIFICATION SYSTEM (POPUP, UNREAD BADGE & EMPTY STATE)
 ══════════════════════════════════════════════════════════════ */
-let NOTIFICATIONS_DATA = [
+const DEFAULT_NOTIFICATIONS = [
   {
     id: 'notif-1',
     type: 'izin',
@@ -580,6 +606,21 @@ let NOTIFICATIONS_DATA = [
   }
 ];
 
+function getTeacherNotifications() {
+  const local = JSON.parse(localStorage.getItem('teacher_notifications') || 'null');
+  if (!local || local.length === 0) {
+    localStorage.setItem('teacher_notifications', JSON.stringify(DEFAULT_NOTIFICATIONS));
+    return DEFAULT_NOTIFICATIONS;
+  }
+  return local;
+}
+
+function saveTeacherNotifications(data) {
+  localStorage.setItem('teacher_notifications', JSON.stringify(data));
+}
+
+let NOTIFICATIONS_DATA = getTeacherNotifications();
+
 const $modalNotifBackdrop   = document.getElementById('modalNotifBackdrop');
 const $modalNotifClose      = document.getElementById('modalNotifClose');
 const $btnNotifCloseBottom  = document.getElementById('btnNotifCloseBottom');
@@ -589,6 +630,7 @@ const $btnMarkAllRead       = document.getElementById('btnMarkAllRead');
 const $notifDot             = document.querySelector('.notif-dot');
 
 function renderNotifications() {
+  NOTIFICATIONS_DATA = getTeacherNotifications();
   if (!$notifListContainer) return;
   $notifListContainer.innerHTML = '';
 
@@ -650,6 +692,7 @@ function renderNotifications() {
     // Klik untuk menandai sebagai sudah dibaca
     el.addEventListener('click', function () {
       item.read = true;
+      saveTeacherNotifications(NOTIFICATIONS_DATA);
       renderNotifications();
     });
 
@@ -685,6 +728,7 @@ if ($btnNotifCloseBottom) {
 if ($btnMarkAllRead) {
   $btnMarkAllRead.addEventListener('click', function () {
     NOTIFICATIONS_DATA.forEach(n => { n.read = true; });
+    saveTeacherNotifications(NOTIFICATIONS_DATA);
     renderNotifications();
     showToast('Semua pemberitahuan telah ditandai sebagai dibaca.');
   });

@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Administrator | Presensi Sekolah</title>
+  <meta name="description" content="Dashboard Administrator Sistem Presensi Sekolah - Monitoring Kehadiran Guru, Verifikasi Akun Baru, dan Persetujuan Izin." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Leaflet CSS for GPS map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+<body>
+
+  <div class="admin-app-layout">
+    
+    <!-- ═════════════════════════════════════════
+         SIDEBAR
+    ═════════════════════════════════════════ -->
+    <aside class="admin-sidebar" aria-label="Sidebar Navigasi Administrator">
+      
+      <!-- Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">SMPN 1 Surabaya</span>
+          <span class="brand-subtitle">Portal Admin</span>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Utama</div>
+        
+        <button class="nav-item active" data-page="pageOverview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Monitoring Kehadiran</span>
+        </button>
+
+        <div class="nav-section-label">Persetujuan & Verifikasi</div>
+
+        <button class="nav-item" data-page="pageVerifikasi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <polyline points="16 11 18 13 22 9"></polyline>
+          </svg>
+          <span>Verifikasi Akun (ACC)</span>
+          <span class="nav-badge-pill" id="badgePendingCount">2</span>
+        </button>
+
+        <button class="nav-item" data-page="pagePersetujuan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Pengajuan Izin / Dinas</span>
+          <span class="nav-badge-pill" id="badgeIzinCount">2</span>
+        </button>
+
+        <div class="nav-section-label">Master & Laporan</div>
+
+        <button class="nav-item" data-page="pageKegiatan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <circle cx="12" cy="15" r="2"></circle>
+          </svg>
+          <span>Kegiatan & Lokasi Acara</span>
+        </button>
+
+        <button class="nav-item" data-page="pageMasterGuru">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Data Guru & Rekap</span>
+        </button>
+
+        <button class="nav-item" data-page="pagePengaturan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Pengaturan Sekolah</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="btn-sidebar-logout" id="btnAdminLogout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Keluar Sesi Admin
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ═════════════════════════════════════════
+         MAIN WRAPPER & HEADER
+    ═════════════════════════════════════════ -->
+    <main class="admin-main-wrapper">
+
+      <!-- Top Header -->
+      <header class="admin-top-header">
+        <div class="header-left-title">
+          <h1 class="page-main-heading" id="pageHeading">Monitoring Kehadiran Hari Ini</h1>
+          <p class="page-sub-heading" id="pageSubHeading">Pantau log presensi, lokasi GPS dan tingkat kehadiran seluruh guru</p>
+        </div>
+
+        <div class="header-right-actions">
+          
+          <!-- Live Clock -->
+          <div class="live-clock-badge">
+            <span class="live-dot"></span>
+            <span id="adminLiveClock">--:--:-- WIB</span>
+          </div>
+
+          <!-- Notification Bell -->
+          <button class="btn-header-icon" id="btnAdminNotif" title="Notifikasi Permohonan">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notif-bubble-count" id="headerNotifBadge">4</span>
+          </button>
+
+          <!-- Admin Profile Pill -->
+          <div class="admin-profile-pill" id="btnAdminProfile" title="Lihat Profil Admin">
+            <img src="assets/img/profile-diah.jpg" alt="Admin" class="admin-avatar-small" />
+            <div class="admin-profile-meta">
+              <span class="admin-name-text">Ibu Diah Safitri, S.Pd</span>
+              <span class="admin-role-text">Administrator Utama</span>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Content Container -->
+      <div class="admin-content-container">
+
+        <!-- ════ PAGE 1: MONITORING OVERVIEW ════ -->
+        <section class="admin-page-section active" id="pageOverview">
+          
+          <!-- Stats Row -->
+          <div class="stats-overview-grid">
+            <div class="stat-metric-card green">
+              <div class="stat-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="stat-data-col">
+                <span class="stat-num-val" id="statHadir">4</span>
+                <span class="stat-label-text">Hadir Hari Ini</span>
+                <span class="stat-meta-sub">Tepat waktu</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card amber">
+              <div class="stat-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <div class="stat-data-col">
+                <span class="stat-num-val" id="statTerlambat">1</span>
+                <span class="stat-label-text">Terlambat</span>
+                <span class="stat-meta-sub">> 07.15 WIB</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card blue">
+              <div class="stat-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="stat-data-col">
+                <span class="stat-num-val" id="statIzin">1</span>
+                <span class="stat-label-text">Izin / Sakit / Dinas</span>
+                <span class="stat-meta-sub">Tercatat di sistem</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card red">
+              <div class="stat-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <div class="stat-data-col">
+                <span class="stat-num-val" id="statAlpha">0</span>
+                <span class="stat-label-text">Alpha / Tanpa Kabar</span>
+                <span class="stat-meta-sub">Belum presensi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Grid: GPS Map & Live Presence Log -->
+          <div class="overview-main-grid">
+            
+            <!-- Map Card -->
+            <div class="admin-card-box">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Peta Geotagging Presensi Guru (Real-time)</h3>
+                <span class="badge-tag-pill">Radius 200m</span>
+              </div>
+              <div class="admin-map-container">
+                <div id="adminMap"></div>
+              </div>
+            </div>
+
+            <!-- Live Feed Card -->
+            <div class="admin-card-box">
+              <div class="admin-card-header">
+                <h3 class="admin-card-title">Log Presensi Masuk & Pulang</h3>
+                <span class="badge-tag-pill">Hari Ini</span>
+              </div>
+              <div class="live-feed-list" id="liveFeedList"></div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ════ PAGE 2: VERIFIKASI AKUN GURU BARU (ACC) ════ -->
+        <section class="admin-page-section" id="pageVerifikasi">
+          <div class="admin-card-box" style="flex:1;">
+            <div class="admin-card-header">
+              <div>
+                <h3 class="admin-card-title">Daftar Pendaftaran Akun Guru Menunggu Persetujuan (ACC)</h3>
+                <p style="font-size:11.5px; color:#64748b; margin-top:2px;">Guru yang baru mendaftar di <code>register.html</code> harus disetujui Admin sebelum dapat login.</p>
+              </div>
+            </div>
+            
+            <div style="padding: 16px 20px; overflow-x: auto;">
+              
+              <div id="pendingEmptyState" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding:48px 20px; text-align:center; color:#64748b;">
+                <div style="font-size:36px; margin-bottom:10px;">✨</div>
+                <b style="font-size:14px; color:#0f172a;">Tidak Ada Permohonan Akun Pending</b>
+                <p style="font-size:12px; margin-top:4px;">Semua pendaftaran akun guru baru telah diverifikasi dan disetujui.</p>
+              </div>
+
+              <div id="pendingTableWrapper">
+                <table class="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>Profil Guru</th>
+                      <th>Mata Pelajaran & NUPTK</th>
+                      <th>Status Kepegawaian</th>
+                      <th>Email & WhatsApp</th>
+                      <th>Aksi Verifikasi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pendingTeachersTableBody"></tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ════ PAGE 3: PENGAJUAN & DISPOSISI IZIN / DINAS ════ -->
+        <section class="admin-page-section" id="pagePersetujuan">
+          <div class="admin-card-box" style="flex:1;">
+            
+            <div class="admin-card-header">
+              <div>
+                <h3 class="admin-card-title">Permohonan Izin, Sakit, & Perjalanan Dinas Guru</h3>
+                <p style="font-size:11.5px; color:#64748b; margin-top:2px;">Unduh dokumen permohonan untuk arsip dan ajukan/teruskan berkas ke Kepala Sekolah untuk persetujuan resmi.</p>
+              </div>
+              <span class="badge-tag-pill">Agustus 2026</span>
+            </div>
+
+            <!-- SOP Wewenang Notice Banner -->
+            <div style="margin: 14px 20px 0; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-size: 12px; color: #166534;">
+              <span style="font-size:22px; flex-shrink:0;">🏛️</span>
+              <div style="line-height: 1.45;">
+                <b>Wewenang Persetujuan Resmi (Kepala Sekolah):</b> Sesuai SOP sekolah, hak persetujuan resmi (ACC / Tolak) sepenuhnya berada pada <b>Kepala Sekolah</b>. Administrator bertugas memeriksa lampiran berkas, mengunduh arsip dokumen, dan mengajukan permohonan ke Kepala Sekolah.
+              </div>
+            </div>
+            
+            <div style="padding: 16px 20px; overflow-x: auto;">
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>ID Permohonan</th>
+                    <th>Nama Guru</th>
+                    <th>Jenis Izin</th>
+                    <th>Rentang Tanggal</th>
+                    <th>Alasan & Lampiran</th>
+                    <th>Status Persetujuan Kepsek</th>
+                    <th>Aksi Administrator</th>
+                  </tr>
+                </thead>
+                <tbody id="leaveRequestsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════ PAGE: KEGIATAN & LOKASI ACARA ════ -->
+        <section class="admin-page-section" id="pageKegiatan">
+          <div class="admin-card-box" style="flex:1;">
+            
+            <div class="admin-card-header">
+              <div>
+                <h3 class="admin-card-title">Manajemen Kegiatan & Lokasi Acara Khusus</h3>
+                <p style="font-size:11.5px; color:#64748b; margin-top:2px;">Acara yang wajib/diikuti guru dengan titik koordinat GPS. Guru dapat melakukan presensi di lokasi acara maupun di sekolah.</p>
+              </div>
+              <button class="btn-acc-action approve" id="btnBukaModalEvent" style="padding: 8px 16px; font-size:12.5px;">
+                + Tambah / Upload Kegiatan Baru
+              </button>
+            </div>
+
+            <!-- Notice Banner -->
+            <div style="margin: 14px 20px 0; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #065f46;">
+              <span style="font-size:18px;">📍</span>
+              <div>
+                <b>Fitur Multi-Lokasi Geofencing:</b> Pada hari kegiatan berlangsung, sistem presensi guru akan otomatis mengizinkan presensi valid di <b>Titik Koordinat Acara</b> maupun di <b>Sekolah Utama</b>.
+              </div>
+            </div>
+
+            <div style="padding: 16px 20px; overflow-x: auto;">
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Nama Acara & Kategori</th>
+                    <th>Jadwal Pelaksanaan</th>
+                    <th>Lokasi & Gedung</th>
+                    <th>Titik Koordinat GPS</th>
+                    <th>Target Peserta</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="adminEventsTableBody"></tbody>
+              </table>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ════ PAGE 4: DATA MASTER GURU & REKAP ════ -->
+        <section class="admin-page-section" id="pageMasterGuru">
+          <div class="admin-card-box" style="flex:1;">
+            
+            <div class="admin-card-header">
+              <div>
+                <h3 class="admin-card-title">Data Seluruh Guru & Tenaga Kependidikan</h3>
+                <p style="font-size:11.5px; color:#64748b; margin-top:2px;">Kelola status akun, unduh rekap kehadiran bulanan guru dalam format PDF resmi atau Excel.</p>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn-acc-action approve" id="btnBukaModalRekap" style="padding: 8px 18px; font-size:12.5px; display:flex; align-items:center; gap:6px;">
+                  📥 Unduh Rekap Presensi Bulanan
+                </button>
+              </div>
+            </div>
+
+            <div style="padding: 16px 20px;">
+              <div class="table-filter-bar">
+                <div class="search-input-wrapper">
+                  <span class="search-icon-pos">🔍</span>
+                  <input type="text" id="searchTeacherInput" placeholder="Cari nama guru, NIP, atau mata pelajaran..." />
+                </div>
+                <div style="font-size:12px; font-weight:700; color:#64748b;">
+                  Total Guru Aktif: <b id="statTotalGuru" style="color:#059669;">3</b> Orang
+                </div>
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table class="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>Identitas Guru</th>
+                      <th>Mata Pelajaran / Tugas</th>
+                      <th>Status Kepegawaian</th>
+                      <th>Kontak Email</th>
+                      <th>Status Akun</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="masterTeachersTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ════ PAGE 5: PENGATURAN SEKOLAH ════ -->
+        <section class="admin-page-section" id="pagePengaturan">
+          <div class="admin-card-box" style="max-width:960px;">
+            <div class="admin-card-header">
+              <div>
+                <h3 class="admin-card-title">Pengaturan Identitas Sekolah, KOP Surat Presensi & Jam Kerja</h3>
+                <p style="font-size:11.5px; color:#64748b; margin-top:2px;">Konfigurasi logo, kop surat resmi, pejabat penandatangan laporan, serta jadwal kerja dan radius presensi GPS.</p>
+              </div>
+            </div>
+            
+            <form id="schoolSettingsForm" style="padding: 22px 24px;">
+              
+              <!-- ─── SEKSI 1: IDENTITAS SEKOLAH & KOP SURAT ─── -->
+              <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1.5px dashed #e2e8f0;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom: 14px;">
+                  <span style="font-size: 20px;">🏛️</span>
+                  <h4 style="margin:0; font-size:14px; font-weight:800; color:#0f172a;">Informasi KOP Surat Resmi & Pejabat Pengesah</h4>
+                </div>
+
+                <!-- Logo Upload with Live Preview -->
+                <div class="settings-group" style="margin-bottom: 16px;">
+                  <label class="settings-label">Logo Resmi Sekolah / Instansi (Tampil di KOP Surat & Header)</label>
+                  <div style="display:flex; align-items:center; gap:16px; background:#f8fafc; padding:12px 16px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <img id="kopLogoPreview" src="assets/img/logo-smpn1.png" alt="Logo Sekolah" style="width:65px; height:65px; object-fit:contain; border-radius:8px; background:#ffffff; padding:4px; border:1px solid #cbd5e1;" onerror="this.src='assets/img/logo-smpn1.png'" />
+                    <div style="flex:1;">
+                      <input type="file" id="inputKopLogo" accept="image/*" class="settings-input" style="padding:6px; font-size:12px;" />
+                      <span style="font-size:10.5px; color:#64748b; display:block; margin-top:4px;">Format: PNG / JPG / SVG transparan. Ukuran ideal: 200×200 px.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-grid-2col">
+                  <div class="settings-group">
+                    <label class="settings-label">Pemerintah Kota / Daerah / Yayasan (KOP Baris 1) <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopGov" class="settings-input" value="PEMERINTAH KOTA SURABAYA" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Dinas / Kementerian Pembina (KOP Baris 2) <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopDept" class="settings-input" value="DINAS PENDIDIKAN" required />
+                  </div>
+
+                  <div class="settings-group full" style="grid-column: 1 / -1;">
+                    <label class="settings-label">Nama Resmi Satuan Pendidikan / Sekolah (KOP Baris 3) <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopSchoolName" class="settings-input" value="SEKOLAH MENENGAH PERTAMA NEGERI 1 SURABAYA" required />
+                  </div>
+
+                  <div class="settings-group full" style="grid-column: 1 / -1;">
+                    <label class="settings-label">Alamat Jalan, Nomor Kontak & Email (KOP Baris 4) <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopAddress" class="settings-input" value="Jalan Pacar No. 4-6, Telepon (031) 5342158, Email: info@smpn1surabaya.sch.id" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Kota Tempat Penandatanganan <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopCity" class="settings-input" value="Surabaya" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Nama Kepala Sekolah & Gelar <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopKepsekName" class="settings-input" value="Dr. H. Bambang Sudarsono, M.Pd" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">NIP Kepala Sekolah <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopKepsekNip" class="settings-input" value="19680315 199412 1 002" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Nama Kepala Tata Usaha / Kepegawaian <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopTuName" class="settings-input" value="Hj. Endang Sri Wahyuni, S.Sos" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">NIP Kepala Tata Usaha <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="kopTuNip" class="settings-input" value="19740510 199903 2 004" required />
+                  </div>
+                </div>
+
+                <!-- Live KOP Preview Box -->
+                <div style="margin-top: 14px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
+                  <span style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; display:block; margin-bottom:8px;">Pratinjau Langsung KOP Surat Laporan:</span>
+                  <div style="background:#ffffff; border:1px dashed #94a3b8; padding:12px; border-radius:6px; display:flex; align-items:center; border-bottom:2.5px double #000;">
+                    <img id="kopMiniPreview" src="assets/img/logo-smpn1.png" alt="Logo" style="width:45px; height:45px; object-fit:contain; margin-right:12px;" onerror="this.src='assets/img/logo-smpn1.png'" />
+                    <div style="flex:1; text-align:center; font-family:'Times New Roman', Times, serif; line-height:1.2;">
+                      <div id="previewGov" style="font-size:11px; font-weight:bold; letter-spacing:0.5px;">PEMERINTAH KOTA SURABAYA</div>
+                      <div id="previewDept" style="font-size:11px; font-weight:bold;">DINAS PENDIDIKAN</div>
+                      <div id="previewSchool" style="font-size:13px; font-weight:bold;">SEKOLAH MENENGAH PERTAMA NEGERI 1 SURABAYA</div>
+                      <div id="previewAddress" style="font-size:9.5px; font-style:italic; color:#444;">Jalan Pacar No. 4-6, Telepon (031) 5342158, Email: info@smpn1surabaya.sch.id</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ─── SEKSI 2: JADWAL KERJA & GEOFENCE ─── -->
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom: 14px;">
+                  <span style="font-size: 20px;">⏱️</span>
+                  <h4 style="margin:0; font-size:14px; font-weight:800; color:#0f172a;">Jadwal Jam Kerja & Titik Lokasi Presensi (Geofence)</h4>
+                </div>
+
+                <div class="settings-grid-2col">
+                  <div class="settings-group">
+                    <label class="settings-label">Jam Masuk Reguler (Senin - Kamis)</label>
+                    <input type="time" id="setJamMasukReg" class="settings-input" value="07:30" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Jam Pulang Reguler (Senin - Kamis)</label>
+                    <input type="time" id="setJamPulangReg" class="settings-input" value="16:00" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Jam Masuk Jumat</label>
+                    <input type="time" id="setJamMasukJumat" class="settings-input" value="07:30" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Jam Pulang Jumat</label>
+                    <input type="time" id="setJamPulangJumat" class="settings-input" value="16:30" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Batas Toleransi Keterlambatan (Menit)</label>
+                    <input type="number" id="setToleransi" class="settings-input" value="15" required />
+                  </div>
+
+                  <div class="settings-group">
+                    <label class="settings-label">Radius Presensi Geofence Sekolah (Meter)</label>
+                    <input type="number" id="setRadius" class="settings-input" value="200" required />
+                  </div>
+
+                  <div class="settings-group full" style="grid-column: 1 / -1;">
+                    <label class="settings-label">Titik Koordinat GPS Sekolah (Lat, Lng)</label>
+                    <input type="text" id="setCoords" class="settings-input" value="-7.3305, 111.3311" required />
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px;">
+                <button type="submit" class="btn-save-settings">
+                  💾 Simpan Seluruh Pengaturan Sekolah & KOP Surat
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ════ MODAL: TAMBAH / UPLOAD KEGIATAN & TITIK ACARA ════ -->
+  <div class="admin-modal-backdrop" id="modalEventBackdrop">
+    <div class="admin-modal-card" style="max-width: 640px;">
+      
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Tambah Kegiatan / Acara dengan Titik Presensi</h3>
+        <button class="modal-card-close" id="btnCloseModalEvent">✕</button>
+      </div>
+
+      <form id="formTambahEvent" style="display:flex; flex-direction:column; overflow-y:auto;">
+        <div class="modal-card-body">
+          
+          <div class="settings-group">
+            <label class="settings-label">Nama Acara / Kegiatan <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="evName" class="settings-input" placeholder="Contoh: Workshop Kurikulum Merdeka di Balai Guru" required />
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-label">Kategori Kegiatan <span style="color:#ef4444;">*</span></label>
+            <select id="evTag" class="settings-select" required>
+              <option value="wajib" selected>Wajib (Seluruh Guru / Terpilih)</option>
+              <option value="wajib_khusus">Wajib Khusus (Perwakilan / Penugasan)</option>
+              <option value="opsional">Opsional / Pilihan</option>
+              <option value="info">Informasi Kegiatan</option>
+            </select>
+          </div>
+
+          <!-- Multi-Select Target Guru Peserta -->
+          <div class="settings-group" style="margin-top: 2px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <label class="settings-label" style="margin-bottom:0;">Target Guru Peserta <span style="color:#ef4444;">*</span></label>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn-picker-action" id="btnPilihSemuaGuru">☑️ Pilih Semua Guru</button>
+                <button type="button" class="btn-picker-action" id="btnHapusSemuaGuru">⬜ Batalkan Semua</button>
+              </div>
+            </div>
+            
+            <div class="teacher-checklist-box" id="teacherChecklistContainer">
+              <!-- Populated dynamically via JS -->
+            </div>
+            <div class="teacher-selected-counter" id="teacherSelectedCounter">
+              Terpilih: <b id="countSelectedGuru">0</b> dari <b id="countTotalGuruList">0</b> Guru
+            </div>
+          </div>
+
+          <div class="settings-grid-2col">
+            <div class="settings-group">
+              <label class="settings-label">Tanggal Pelaksanaan <span style="color:#ef4444;">*</span></label>
+              <input type="date" id="evDate" class="settings-input" value="2026-08-25" required />
+            </div>
+
+            <div class="settings-group">
+              <label class="settings-label">Pilih Jam Acara (Mulai s/d Selesai) <span style="color:#ef4444;">*</span></label>
+              <div style="display:grid; grid-template-columns: 1fr auto 1fr auto; align-items:center; gap: 8px;">
+                <input type="time" id="evTimeStart" class="settings-input" value="08:00" required />
+                <span style="font-size:12px; font-weight:700; color:#64748b;">s/d</span>
+                <input type="time" id="evTimeEnd" class="settings-input" value="14:00" required />
+                <span style="font-size:11px; font-weight:700; color:#059669;">WIB</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-label">Nama Tempat / Gedung Acara <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="evVenue" class="settings-input" placeholder="Contoh: Gedung Balai Guru Penggerak Jawa Timur" required />
+          </div>
+
+          <div class="settings-grid-2col">
+            <div class="settings-group">
+              <label class="settings-label">Titik Koordinat GPS Acara (Lat, Lng) <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="evCoords" class="settings-input" placeholder="-7.3150, 111.3450" value="-7.3150, 111.3450" required />
+            </div>
+
+            <div class="settings-group">
+              <label class="settings-label">Radius Presensi Acara (Meter)</label>
+              <input type="number" id="evRadius" class="settings-input" value="300" required />
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-label">Keterangan / Instruksi Tambahan</label>
+            <input type="text" id="evDesc" class="settings-input" placeholder="Guru dapat presensi di lokasi acara atau di sekolah utama." value="Guru dapat melakukan presensi di lokasi acara atau di sekolah utama." />
+          </div>
+
+        </div>
+
+        <div class="modal-card-footer">
+          <button type="button" class="btn-acc-action view" id="btnBatalEvent">Batal</button>
+          <button type="submit" class="btn-acc-action approve" style="padding:10px 20px;">
+            💾 Simpan & Publikasikan Acara
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ════ MODAL: UNDUH REKAP LAPORAN PRESENSI BULANAN ════ -->
+  <div class="admin-modal-backdrop" id="modalRekapBackdrop">
+    <div class="admin-modal-card" style="max-width: 580px;">
+      
+      <div class="modal-card-header">
+        <h3 class="modal-card-title">Unduh Rekapitulasi Presensi Bulanan Pegawai</h3>
+        <button class="modal-card-close" id="btnCloseModalRekap">✕</button>
+      </div>
+
+      <div class="modal-card-body">
+        
+        <!-- Info Banner -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #166534; margin-bottom: 16px;">
+          <span style="font-size:20px;">📄</span>
+          <div>
+            <b>Laporan Resmi SMP Negeri 1 Surabaya:</b> Rekapitulasi mencakup data kehadiran, keterlambatan, izin, sakit, alpha, dan persentase kehadiran lengkap dengan format resmi tanda tangan pimpinan.
+          </div>
+        </div>
+
+        <!-- Scope Selection: Kolektif vs Individu -->
+        <div class="settings-group">
+          <label class="settings-label">Pilih Ruang Lingkup Laporan Rekap</label>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <label class="teacher-check-card" style="cursor:pointer; margin:0; padding:10px 12px; border-radius:10px;">
+              <input type="radio" name="rekapScope" value="kolektif" checked style="accent-color:#059669; width:17px; height:17px;" />
+              <div style="line-height:1.2;">
+                <b style="font-size:12px; color:#0f172a;">📊 Semua Pegawai</b><br>
+                <span style="font-size:10px; color:#64748b;">Format Tabel Rekapitulasi</span>
+              </div>
+            </label>
+
+            <label class="teacher-check-card" style="cursor:pointer; margin:0; padding:10px 12px; border-radius:10px;">
+              <input type="radio" name="rekapScope" value="individu" style="accent-color:#059669; width:17px; height:17px;" />
+              <div style="line-height:1.2;">
+                <b style="font-size:12px; color:#0f172a;">👤 Per Karyawan / Guru</b><br>
+                <span style="font-size:10px; color:#059669; font-weight:700;">Ringkasan + Foto & Titik GPS</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dropdown Pilih Guru (Hanya Muncul saat pilih Perorangan) -->
+        <div class="settings-group" id="groupPilihGuruIndividu" style="display:none; background:#f0fdf4; border:1px solid #a7f3d0; padding:12px 14px; border-radius:10px;">
+          <label class="settings-label" style="color:#065f46; margin-bottom:4px;">Pilih Nama Guru / Karyawan <span style="color:#ef4444;">*</span></label>
+          <select id="rekapGuruSelect" class="settings-select" style="background:#ffffff;"></select>
+        </div>
+
+        <div class="settings-grid-2col">
+          <div class="settings-group">
+            <label class="settings-label">Pilih Periode Bulan & Tahun</label>
+            <select id="rekapBulan" class="settings-select">
+              <option value="Agustus 2026" selected>Agustus 2026 (Bulan Berjalan)</option>
+              <option value="Juli 2026">Juli 2026</option>
+              <option value="Juni 2026">Juni 2026</option>
+              <option value="Mei 2026">Mei 2026</option>
+              <option value="April 2026">April 2026</option>
+            </select>
+          </div>
+
+          <div class="settings-group" id="groupRekapKategori">
+            <label class="settings-label">Kategori Tenaga Pendidik</label>
+            <select id="rekapKategori" class="settings-select">
+              <option value="all" selected>Semua Guru & Pegawai (Semua Status)</option>
+              <option value="PNS">Hanya PNS / ASN Tetap</option>
+              <option value="PPPK">Hanya PPPK</option>
+              <option value="Honorer">Hanya GTT / Honorer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Tanda Tangan Pejabat Pengesah</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <input type="text" id="rekapKepsek" class="settings-input" value="Dr. H. Bambang Sudarsono, M.Pd" placeholder="Nama Kepala Sekolah" />
+            <input type="text" id="rekapNipKepsek" class="settings-input" value="NIP: 19680315 199412 1 002" placeholder="NIP Kepala Sekolah" />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn-acc-action view" id="btnBatalRekap">Tutup</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-acc-action" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:9px 14px; font-size:12px;" id="btnExportCSV">
+            📊 Unduh Excel (.CSV)
+          </button>
+          <button type="button" class="btn-acc-action approve" style="padding:9px 18px; font-size:12.5px;" id="btnCetakPDF">
+            🖨️ Cetak / Simpan PDF Resmi
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ MODAL: NOTIFIKASI PERMOHONAN IZIN / DINAS & VERIFIKASI BARU ════ -->
+  <div class="admin-modal-backdrop" id="modalNotifBackdrop">
+    <div class="admin-modal-card" style="max-width: 640px;">
+      
+      <div class="modal-card-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px; border:1px solid #a7f3d0;">
+            🔔
+          </div>
+          <div>
+            <h3 class="modal-card-title">Notifikasi & Permohonan Masuk</h3>
+            <p style="font-size:11.5px; color:#64748b; margin:0;">Tinjau pengajuan Izin/Dinas dan Verifikasi Akun yang belum diproses</p>
+          </div>
+        </div>
+        <button class="modal-card-close" id="btnCloseModalNotif">✕</button>
+      </div>
+
+      <div class="modal-card-body" style="gap: 16px;">
+        
+        <!-- Category 1: Izin / Dinas Belum Diproses -->
+        <div class="notif-section-group">
+          <div class="notif-section-header">
+            <div class="notif-section-title-wrap">
+              <span class="notif-icon-badge amber">📝</span>
+              <span class="notif-section-title">Permohonan Izin / Dinas Baru</span>
+              <span class="badge-tag-pill" id="notifLeaveCountBadge" style="background:#fef3c7; color:#92400e; font-weight:700;">2 Menunggu</span>
+            </div>
+            <button type="button" class="btn-acc-action view" style="font-size:11px; padding:4px 10px;" id="btnGoToIzinPage">
+              Ke Halaman Izin →
+            </button>
+          </div>
+          
+          <div id="notifLeaveListContainer" class="notif-card-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Category 2: Verifikasi Akun Guru Baru -->
+        <div class="notif-section-group">
+          <div class="notif-section-header">
+            <div class="notif-section-title-wrap">
+              <span class="notif-icon-badge blue">👥</span>
+              <span class="notif-section-title">Verifikasi Akun Guru Baru</span>
+              <span class="badge-tag-pill" id="notifTeacherCountBadge" style="background:#eff6ff; color:#1d4ed8; font-weight:700;">2 Menunggu</span>
+            </div>
+            <button type="button" class="btn-acc-action view" style="font-size:11px; padding:4px 10px;" id="btnGoToVerifikasiPage">
+              Ke Halaman Verifikasi →
+            </button>
+          </div>
+
+          <div id="notifTeacherListContainer" class="notif-card-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:#64748b; font-weight:500;" id="notifSummaryText">
+          Total 4 permohonan menunggu tindakan
+        </span>
+        <button type="button" class="btn-acc-action view" id="btnTutupNotif">Tutup</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ MODAL: INFORMASI PROFIL ADMINISTRATOR ════ -->
+  <div class="admin-modal-backdrop" id="modalProfileBackdrop">
+    <div class="admin-modal-card" style="max-width: 620px;">
+      
+      <div class="modal-card-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px; border:1px solid #a7f3d0;">
+            👤
+          </div>
+          <div>
+            <h3 class="modal-card-title">Informasi Profil Administrator</h3>
+            <p style="font-size:11.5px; color:#64748b; margin:0;">Identitas akun pimpinan & hak akses sistem presensi</p>
+          </div>
+        </div>
+        <button class="modal-card-close" id="btnCloseModalProfile">✕</button>
+      </div>
+
+      <div class="modal-card-body" style="gap: 16px;">
+        
+        <!-- Profile Banner Card -->
+        <div class="admin-profile-banner">
+          <div class="admin-avatar-wrapper">
+            <img src="assets/img/profile-diah.jpg" alt="Foto Admin" class="admin-profile-large-avatar" id="modalAdminPhoto" />
+            <span class="online-indicator-badge" title="Status Online"></span>
+          </div>
+          <div class="admin-banner-details">
+            <h4 class="admin-banner-name" id="modalAdminName">Ibu Diah Safitri, S.Pd</h4>
+            <div class="admin-banner-role-badge">
+              <span>🛡️ Administrator Utama (Super Admin)</span>
+            </div>
+            <div class="admin-banner-school" id="modalAdminSchool">
+              🏫 SMP Negeri 1 Surabaya
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Data Grid -->
+        <div class="admin-info-details-grid">
+          
+          <div class="admin-info-item">
+            <div class="admin-info-label">NIP Pegawai</div>
+            <div class="admin-info-val" id="modalAdminNip">19890412 201402 2 003</div>
+          </div>
+
+          <div class="admin-info-item">
+            <div class="admin-info-label">NUPTK</div>
+            <div class="admin-info-val" id="modalAdminNuptk">4741 7676 6821 0032</div>
+          </div>
+
+          <div class="admin-info-item">
+            <div class="admin-info-label">Jabatan / Unit Tugas</div>
+            <div class="admin-info-val" id="modalAdminDept">Tim Pengembang Kurikulum & Kepegawaian</div>
+          </div>
+
+          <div class="admin-info-item">
+            <div class="admin-info-label">Status Kepegawaian</div>
+            <div class="admin-info-val">
+              <span class="badge-tag-pill" style="background:#ecfdf5; color:#059669; font-weight:700;">PNS / ASN Tetap</span>
+            </div>
+          </div>
+
+          <div class="admin-info-item">
+            <div class="admin-info-label">Email Resmi</div>
+            <div class="admin-info-val" id="modalAdminEmail">diah.safitri@sekolah.sch.id</div>
+          </div>
+
+          <div class="admin-info-item">
+            <div class="admin-info-label">No. WhatsApp / Kontak</div>
+            <div class="admin-info-val" id="modalAdminPhone">+62 812-3456-7890</div>
+          </div>
+
+        </div>
+
+        <!-- Access Rights Box -->
+        <div class="admin-rights-box">
+          <div class="admin-rights-title">
+            <span>🔐 Hak Otoritas & Fitur yang Dikelola</span>
+          </div>
+          <div class="admin-rights-list">
+            <span class="rights-chip">✓ Live Monitoring Kehadiran & Geotagging GPS</span>
+            <span class="rights-chip">✓ Verifikasi & ACC Akun Tenaga Pendidik</span>
+            <span class="rights-chip">✓ Persetujuan Permohonan Izin / Sakit / Dinas Luar</span>
+            <span class="rights-chip">✓ Manajemen Jadwal & Titik Koordinat Acara Khusus</span>
+            <span class="rights-chip">✓ Cetak & Unduh Rekap Laporan Bulanan (PDF & CSV)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn-sidebar-logout" style="width:auto; padding:8px 14px; margin:0; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:8px;" id="btnModalProfileLogout">
+          🚪 Keluar Sesi Admin
+        </button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-acc-action view" id="btnModalProfileSettings">
+            ⚙️ Pengaturan Sekolah
+          </button>
+          <button type="button" class="btn-acc-action approve" id="btnTutupProfile" style="padding:8px 18px;">
+            Tutup
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
