@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pengajuan Izin & Ketidakhadiran | Presensi Guru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Emerald Green Theme Palette matching Dashboard */
+      --primary-green:    #059669;
+      --primary-dark:     #047857;
+      --primary-deep:     #064e3b;
+      --primary-light:    #10b981;
+      --primary-mint:     #34d399;
+      --primary-glow:     rgba(16, 185, 129, 0.28);
+      --primary-bg-light: #ecfdf5;
+
+      --bg-page:          #f0fdf4;
+      --bg-card:          #ffffff;
+
+      --text-dark:        #0f172a;
+      --text-sub:         #475569;
+      --text-muted:       #64748b;
+      --text-white:       #ffffff;
+
+      --green:            #10b981;
+      --green-bg:         #ecfdf5;
+      --amber:            #f59e0b;
+      --amber-bg:         #fffbeb;
+      --red:              #ef4444;
+      --red-bg:           #fef2f2;
+      --blue:             #0284c7;
+      --blue-bg:          #f0f9ff;
+
+      --radius-sm:        12px;
+      --radius-md:        18px;
+      --radius-lg:        24px;
+      --radius-xl:        34px;
+      --radius-pill:      50px;
+
+      --shadow-card:      0 8px 24px rgba(6, 78, 59, 0.05);
+      --shadow-hover:     0 14px 34px rgba(6, 78, 59, 0.12);
+      --shadow-green:     0 16px 36px rgba(5, 150, 105, 0.26);
+
+      --transition:       all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      background: var(--bg-page);
+      color: var(--text-dark);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ═════════════════════════════════════════════
+       LAYOUT FULL 1 DESKTOP VIEWPORT
+    ═════════════════════════════════════════════ */
+    .dashboard-layout {
+      display: flex;
+      gap: 22px;
+      width: 100vw;
+      height: 100vh;
+      padding: 16px 22px;
+      background: #f3f9f6;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* ═════════════════════════════════════════════
+       LEFT SIDEBAR CAPSULE
+    ═════════════════════════════════════════════ */
+    .sidebar-capsule {
+      width: 68px;
+      height: calc(100vh - 32px);
+      background: linear-gradient(180deg, #10b981 0%, #059669 55%, #047857 100%);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 18px 8px;
+      box-shadow: var(--shadow-green);
+      flex-shrink: 0;
+      z-index: 40;
+      position: relative;
+    }
+
+    .side-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.88);
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      position: relative;
+      text-decoration: none;
+    }
+
+    .side-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
+    }
+
+    .side-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    .side-item {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      padding: 0;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .side-item-bg {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.72);
+      transition: var(--transition);
+    }
+
+    .side-item:hover .side-item-bg {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .side-item.active .side-item-bg {
+      background: #064e3b;
+      color: #ffffff;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28), 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: scale(1.02);
+    }
+
+    .logout-btn {
+      margin-top: auto;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.28);
+      color: #fca5a5;
+    }
+
+    /* ═════════════════════════════════════════════
+       MAIN CONTENT
+    ═════════════════════════════════════════════ */
+    .main-dashboard {
+      flex: 1;
+      height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    /* Smooth custom scrollbar */
+    .main-dashboard::-webkit-scrollbar { width: 6px; }
+    .main-dashboard::-webkit-scrollbar-track { background: transparent; }
+    .main-dashboard::-webkit-scrollbar-thumb { background: rgba(5, 150, 105, 0.18); border-radius: 10px; }
+
+    /* ─── Top Header ─── */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      flex-shrink: 0;
+      gap: 16px;
+    }
+
+    .header-main-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-back-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid rgba(16, 185, 129, 0.35);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #047857;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .btn-back-pill:hover {
+      background: #ecfdf5;
+      transform: translateX(-2px);
+      border-color: #10b981;
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-main {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .header-sub {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      margin-top: 1px;
+    }
+
+    .header-right-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .quota-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1.5px solid rgba(16, 185, 129, 0.35);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      padding: 5px 14px 5px 6px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 4px 14px rgba(6, 78, 59, 0.06);
+      border: 1.5px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #ffffff;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .user-info-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .user-role-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary-green);
+    }
+
+    /* ═════════════════════════════════════════════
+       2-COLUMN FORM CONTAINER
+    ═════════════════════════════════════════════ */
+    .form-workspace-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Left Stepper & Info Panel ── */
+    .stepper-side-panel {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .panel-header-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Stepper List Vertical */
+    .stepper-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .step-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      position: relative;
+      padding-bottom: 22px;
+      cursor: pointer;
+    }
+
+    .step-node:last-child {
+      padding-bottom: 0;
+    }
+
+    .step-node::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 34px;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+      transition: var(--transition);
+    }
+
+    .step-node:last-child::before {
+      display: none;
+    }
+
+    .step-node.done::before {
+      background: #10b981;
+    }
+
+    .step-node-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .step-node.active .step-node-num {
+      background: var(--primary-green);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px var(--primary-glow);
+    }
+
+    .step-node.done .step-node-num {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .step-node-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 4px;
+    }
+
+    .step-node-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .step-node.active .step-node-label {
+      color: var(--primary-green);
+    }
+
+    .step-node-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .step-node.active .step-node-title {
+      color: var(--text-dark);
+      font-weight: 800;
+    }
+
+    /* Side info cards */
+    .quota-info-card {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 6px 18px var(--primary-glow);
+    }
+
+    .quota-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quota-title {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .quota-val {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .quota-desc {
+      font-size: 11px;
+      opacity: 0.85;
+      line-height: 1.4;
+    }
+
+    .guideline-card {
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .guideline-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guideline-list {
+      padding-left: 18px;
+      font-size: 11px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* ── Right Main Card (Step Forms) ── */
+    .form-main-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .form-step-content {
+      flex: 1;
+      padding: 24px 28px;
+      overflow-y: auto;
+      display: none;
+      animation: fadeInForm 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+
+    .form-step-content.active {
+      display: block;
+    }
+
+    @keyframes fadeInForm {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-header {
+      margin-bottom: 20px;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.01em;
+    }
+
+    .step-subtitle {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      margin-top: 3px;
+    }
+
+    /* ── Step 1: Types Grid ── */
+    .types-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .type-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      background: #ffffff;
+    }
+
+    .type-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .type-card.selected {
+      border-color: var(--primary-green);
+      background: #f0fdf4;
+      box-shadow: 0 8px 24px rgba(5, 150, 105, 0.14);
+    }
+
+    .type-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    .type-card[data-type="sakit"] .type-icon-box { background: #fee2e2; color: #dc2626; }
+    .type-card[data-type="dinas"] .type-icon-box { background: #e0e7ff; color: #4338ca; }
+    .type-card[data-type="izin"]  .type-icon-box { background: #fef3c7; color: #b45309; }
+    .type-card[data-type="cuti"]  .type-icon-box { background: #dcfce7; color: #15803d; }
+
+    .type-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .type-name {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .type-desc {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+
+    .type-req-pill {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(0,0,0,0.05);
+      color: var(--text-muted);
+      width: fit-content;
+    }
+
+    .type-card.selected .type-req-pill {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .custom-radio-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .type-card.selected .custom-radio-circle {
+      border-color: var(--primary-green);
+      background: var(--primary-green);
+    }
+
+    .type-card.selected .custom-radio-circle::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    /* ── Step 2: Date & Reason Details ── */
+    .form-row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid #cbd5e1;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--text-dark);
+      background: #ffffff;
+      transition: var(--transition);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .day-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      color: #047857;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── Step 3: Document Upload ── */
+    .upload-zone-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      background: #f8fafc;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .upload-zone-box:hover, .upload-zone-box.dragover {
+      border-color: var(--primary-green);
+      background: #f0fdf4;
+    }
+
+    .upload-zone-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      color: var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .upload-zone-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .upload-zone-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .upload-actions-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-upload-opt {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius-pill);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-upload-opt:hover {
+      border-color: var(--primary-green);
+      color: var(--primary-green);
+    }
+
+    .btn-upload-opt.primary {
+      background: var(--primary-green);
+      border-color: var(--primary-green);
+      color: #ffffff;
+    }
+
+    .btn-upload-opt.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Preview Card */
+    .upload-preview-card {
+      display: none;
+      margin-top: 16px;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border: 1.5px solid #10b981;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .upload-preview-card.show {
+      display: flex;
+    }
+
+    .preview-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .preview-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .preview-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-size {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .btn-remove-file {
+      background: #fee2e2;
+      border: none;
+      color: #ef4444;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── Step 4: Summary Confirmation ── */
+    .review-card {
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .review-head {
+      background: #ecfdf5;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .review-type-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #065f46;
+    }
+
+    .review-body {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .review-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .review-item.full {
+      grid-column: 1 / -1;
+    }
+
+    .review-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .review-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* Checklist status */
+    .validation-status-box {
+      background: #f0fdf4;
+      border: 1.5px solid #a7f3d0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+
+    .val-status-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #065f46;
+      margin-bottom: 8px;
+    }
+
+    .val-status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .val-status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #047857;
+      font-weight: 600;
+    }
+
+    .val-status-item.missing {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    .declaration-box {
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      border: 1.5px solid #cbd5e1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .declaration-box:hover {
+      border-color: var(--primary-green);
+      background: #f8fafc;
+    }
+
+    .declaration-box input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--primary-green);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .declaration-text {
+      font-size: 12px;
+      color: var(--text-dark);
+      line-height: 1.5;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── Success Screen ── */
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      flex: 1;
+    }
+
+    .success-screen.show {
+      display: flex;
+    }
+
+    .success-icon-anim {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #15803d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+      animation: bounceSuccess 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes bounceSuccess {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .success-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      max-width: 420px;
+      margin: 6px auto 16px;
+      line-height: 1.5;
+    }
+
+    .ref-badge {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-family: monospace;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 24px;
+    }
+
+    /* ── Bottom Actions Bar ── */
+    .form-bottom-actions {
+      padding: 16px 28px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-step-prev {
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--text-dark);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-step-prev:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-step-next {
+      padding: 11px 28px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: var(--primary-green);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px var(--primary-glow);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-step-next:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-step-next:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      background: #94a3b8;
+    }
+
+    /* ═════════════════════════════════════════════
+       RESPONSIVE DESIGN (TABLET & MOBILE)
+    ═════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      html, body {
+        overflow: auto;
+        height: auto;
+        min-height: 100%;
+      }
+
+      .dashboard-layout {
+        flex-direction: column;
+        padding: 12px;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+
+      .sidebar-capsule {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 8px 14px;
+        border-radius: var(--radius-pill);
+      }
+
+      .side-nav {
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .logout-btn { margin: 0; }
+
+      .main-dashboard {
+        height: auto;
+        overflow: visible;
+      }
+
+      .form-workspace-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .stepper-side-panel {
+        height: auto;
+      }
+
+      .stepper-vertical {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .step-node {
+        padding-bottom: 0;
+      }
+
+      .step-node::before {
+        display: none;
+      }
+
+      .step-node-info {
+        display: none;
+      }
+
+      .types-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-right-group {
+        justify-content: space-between;
+      }
+
+      .form-step-content {
+        padding: 16px;
+      }
+
+      .form-bottom-actions {
+        padding: 12px 16px;
+      }
+
+      .btn-step-next {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- ─── LEFT SIDEBAR CAPSULE ───────────────── -->
+  <aside class="sidebar-capsule" aria-label="Navigasi Pengajuan">
+    <!-- Home/Dashboard -->
+    <a href="dashboard-guru.html" class="side-btn" title="Dashboard">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </a>
+
+    <!-- Nav items -->
+    <nav class="side-nav">
+      <!-- Active Menu Izin -->
+      <a href="pengajuan-izin.html" class="side-item active" title="Pengajuan Izin">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+        </div>
+      </a>
+
+      <!-- Riwayat Presensi -->
+      <a href="dashboard-guru.html" class="side-item" title="Kembali ke Dashboard">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+      </a>
+    </nav>
+
+    <!-- Logout button -->
+    <a href="login.html" class="side-btn logout-btn" title="Keluar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </a>
+  </aside>
+
+  <!-- ─── MAIN WORKSPACE AREA ─────────────────── -->
+  <main class="main-dashboard">
+
+    <!-- Top Header -->
+    <header class="dashboard-header">
+      <div class="header-main-row">
+        <a href="dashboard-guru.html" class="btn-back-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Kembali
+        </a>
+
+        <div class="header-titles">
+          <h1 class="header-main">Pengajuan Izin & Ketidakhadiran</h1>
+          <p class="header-sub">Formulir Resmi Pengajuan Izin, Sakit, & Perjalanan Dinas</p>
+        </div>
+      </div>
+
+      <div class="header-right-group">
+        <div class="quota-badge-pill">
+          🌿 Sisa Kuota: <b>12 Hari</b>
+        </div>
+        <div class="user-profile-badge">
+          <div class="user-avatar">
+            <img src="assets/img/profile-diah.jpg" alt="Foto Guru" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23059669\'><circle cx=\'12\' cy=\'8\' r=\'4\'/><path d=\'M20 21a8 8 0 0 0-16 0\'/></svg>'">
+          </div>
+          <div class="user-info-text">
+            <span class="user-name">Ibu Diah Safitri, S.Pd</span>
+            <span class="user-role-tag">Guru Pengajar</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── 2-COLUMN WORKSPACE GRID ──────────── -->
+    <div class="form-workspace-grid">
+
+      <!-- LEFT COLUMN: STEPPER & PEDOMAN -->
+      <div class="stepper-side-panel">
+        <h3 class="panel-header-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 14 14"></polyline>
+          </svg>
+          Tahapan Pengajuan
+        </h3>
+
+        <!-- Stepper Vertical -->
+        <div class="stepper-vertical">
+          <!-- Step 1 -->
+          <div class="step-node active" id="stepNode1" onclick="goToStep(1)">
+            <div class="step-node-num">1</div>
+            <div class="step-node-info">
+              <span class="step-node-label">Langkah 1</span>
+              <span class="step-node-title">Pilih Jenis Izin</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-node" id="stepNode2" onclick="goToStep(2)">
+            <div class="step-node-num">2</div>
+            <div class="step-node-info">
+              <span class="step-node-label">Langkah 2</span>
+              <span class="step-node-title">Tanggal & Alasan</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-node" id="stepNode3" onclick="goToStep(3)">
+            <div class="step-node-num">3</div>
+            <div class="step-node-info">
+              <span class="step-node-label">Langkah 3</span>
+              <span class="step-node-title">Unggah Bukti Dokumen</span>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="step-node" id="stepNode4" onclick="goToStep(4)">
+            <div class="step-node-num">4</div>
+            <div class="step-node-info">
+              <span class="step-node-label">Langkah 4</span>
+              <span class="step-node-title">Konfirmasi & Kirim</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quota Info Box -->
+        <div class="quota-info-card">
+          <div class="quota-card-top">
+            <span class="quota-title">Hak Cuti Tahunan</span>
+            <span class="quota-val">12</span>
+          </div>
+          <p class="quota-desc">Sisa 12 hari cuti tersedia untuk tahun ajaran berjalan. Pengajuan dinas tidak memotong kuota cuti tahunan.</p>
+        </div>
+
+        <!-- Guidelines Box -->
+        <div class="guideline-card">
+          <span class="guideline-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Ketentuan Dokumen
+          </span>
+          <ul class="guideline-list">
+            <li>Sakit wajib melampirkan Surat Dokter / Resep.</li>
+            <li>Dinas Luar wajib melampirkan Surat Tugas / Undangan.</li>
+            <li>Semua formulir dan dokumen wajib diisi lengkap.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: MAIN FORM CANVAS -->
+      <div class="form-main-card">
+
+        <!-- ─── STEP 1: PILIH JENIS ─────────────── -->
+        <div class="form-step-content active" id="stepPanel1">
+          <div class="step-header">
+            <h2 class="step-title">Pilih Jenis Ketidakhadiran</h2>
+            <p class="step-subtitle">Tentukan kategori izin atau ketidakhadiran yang ingin Anda ajukan ke pihak sekolah.</p>
+          </div>
+
+          <div class="types-grid">
+            <!-- Card 1: Sakit -->
+            <div class="type-card" data-type="sakit" onclick="selectType('sakit')">
+              <div class="type-icon-box">🏥</div>
+              <div class="type-info">
+                <h4 class="type-name">Sakit</h4>
+                <p class="type-desc">Tidak dapat hadir karena alasan kesehatan atau rawat jalan.</p>
+                <span class="type-req-pill">Wajib Surat Dokter</span>
+              </div>
+              <div class="custom-radio-circle"></div>
+            </div>
+
+            <!-- Card 2: Dinas -->
+            <div class="type-card" data-type="dinas" onclick="selectType('dinas')">
+              <div class="type-icon-box">✈️</div>
+              <div class="type-info">
+                <h4 class="type-name">Perjalanan Dinas</h4>
+                <p class="type-desc">Menghadiri pelatihan, rapat dinas, atau tugas resmi di luar sekolah.</p>
+                <span class="type-req-pill">Wajib Surat Tugas / Undangan</span>
+              </div>
+              <div class="custom-radio-circle"></div>
+            </div>
+
+            <!-- Card 3: Izin Pribadi -->
+            <div class="type-card" data-type="izin" onclick="selectType('izin')">
+              <div class="type-icon-box">📋</div>
+              <div class="type-info">
+                <h4 class="type-name">Izin Kegiatan Pribadi</h4>
+                <p class="type-desc">Keperluan mendesak keluarga atau urusan penting yang tidak dapat ditunda.</p>
+                <span class="type-req-pill">Wajib Foto Bukti / Dokumen</span>
+              </div>
+              <div class="custom-radio-circle"></div>
+            </div>
+
+            <!-- Card 4: Cuti Tahunan -->
+            <div class="type-card" data-type="cuti" onclick="selectType('cuti')">
+              <div class="type-icon-box">🏖️</div>
+              <div class="type-info">
+                <h4 class="type-name">Cuti Tahunan</h4>
+                <p class="type-desc">Menggunakan hak cuti tahunan guru yang telah disetujui sebelumnya.</p>
+                <span class="type-req-pill">Potong Kuota Cuti (12 Hari)</span>
+              </div>
+              <div class="custom-radio-circle"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── STEP 2: DETAIL TANGGAL & ALASAN ── -->
+        <div class="form-step-content" id="stepPanel2">
+          <div class="step-header">
+            <h2 class="step-title">Detail Waktu & Alasan</h2>
+            <p class="step-subtitle">Tentukan rentang tanggal ketidakhadiran dan berikan penjelasan detail keperluan Anda.</p>
+          </div>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="tanggalMulai">
+                Tanggal Mulai *
+                <span class="day-count-badge" id="badgeDurasi">1 Hari</span>
+              </label>
+              <input type="date" id="tanggalMulai" class="form-input" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tanggalSelesai">Tanggal Selesai *</label>
+              <input type="date" id="tanggalSelesai" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="keterangan">Keterangan & Alasan Lengkap * (Wajib Diisi)</label>
+            <textarea id="keterangan" class="form-textarea" placeholder="Tuliskan keterangan detail keperluan Anda secara jelas dan lengkap..."></textarea>
+          </div>
+        </div>
+
+        <!-- ─── STEP 3: UNGGAH BUKTI DOKUMEN ──── -->
+        <div class="form-step-content" id="stepPanel3">
+          <div class="step-header">
+            <h2 class="step-title">Unggah Bukti Pendukung *</h2>
+            <p class="step-subtitle">Wajib melampirkan foto surat dokter, surat tugas, atau dokumen bukti pendukung.</p>
+          </div>
+
+          <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;" />
+
+          <div class="upload-zone-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-zone-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <h4 class="upload-zone-title">Klik atau Seret Dokumen ke Sini</h4>
+            <p class="upload-zone-sub">Mendukung format JPG, PNG, atau PDF (Maksimal 5MB) - Wajib Dilampirkan</p>
+
+            <div class="upload-actions-group" onclick="event.stopPropagation()">
+              <button class="btn-upload-opt primary" onclick="document.getElementById('fileInput').click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Pilih File / Foto Dokumen
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview Card -->
+          <div class="upload-preview-card" id="uploadPreview">
+            <img id="previewImg" class="preview-thumb" src="" alt="Preview File" />
+            <div class="preview-meta">
+              <div class="preview-name" id="previewFileName">foto-bukti.jpg</div>
+              <div class="preview-size" id="previewFileSize">1.2 MB</div>
+            </div>
+            <button class="btn-remove-file" id="btnRemoveFile">Hapus</button>
+          </div>
+        </div>
+
+        <!-- ─── STEP 4: KONFIRMASI & KIRIM ────── -->
+        <div class="form-step-content" id="stepPanel4">
+          <div class="step-header">
+            <h2 class="step-title">Periksa & Konfirmasi</h2>
+            <p class="step-subtitle">Pastikan semua data pengajuan izin dan dokumen yang Anda lampirkan sudah terisi lengkap.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-head">
+              <span class="review-type-title" id="revType">Sakit</span>
+              <span class="day-count-badge" id="revDurasi">1 Hari</span>
+            </div>
+            <div class="review-body">
+              <div class="review-item">
+                <span class="review-label">Nama Pengajar</span>
+                <span class="review-val">Ibu Diah Safitri, S.Pd</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">NIP</span>
+                <span class="review-val">19890412 201402 2 003</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Tanggal Mulai</span>
+                <span class="review-val" id="revMulai">-</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Tanggal Selesai</span>
+                <span class="review-val" id="revSelesai">-</span>
+              </div>
+              <div class="review-item full">
+                <span class="review-label">Keterangan / Alasan</span>
+                <span class="review-val" id="revKet">-</span>
+              </div>
+              <div class="review-item full">
+                <span class="review-label">Lampiran Bukti</span>
+                <span class="review-val" id="revBukti">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Kelengkapan Formulir -->
+          <div class="validation-status-box" id="valStatusBox">
+            <div class="val-status-title">Status Kelengkapan Formulir:</div>
+            <div class="val-status-list">
+              <div class="val-status-item" id="chkItemType">
+                <span>✓</span> Kategori Izin: <b id="valTextType">-</b>
+              </div>
+              <div class="val-status-item" id="chkItemDates">
+                <span>✓</span> Rentang Waktu: <b id="valTextDates">-</b>
+              </div>
+              <div class="val-status-item" id="chkItemReason">
+                <span>✓</span> Alasan Keperluan: <b id="valTextReason">Terisi</b>
+              </div>
+              <div class="val-status-item" id="chkItemFile">
+                <span id="chkFileIcon">✓</span> Dokumen Lampiran: <b id="valTextFile">-</b>
+              </div>
+            </div>
+          </div>
+
+          <label class="declaration-box" for="chkDeclare">
+            <input type="checkbox" id="chkDeclare" />
+            <span class="declaration-text">
+              Saya menyatakan bahwa data dan alasan ketidakhadiran yang diajukan adalah benar dan dapat dipertanggungjawabkan kepada pihak sekolah.
+            </span>
+          </label>
+        </div>
+
+        <!-- ─── SUCCESS SCREEN ────────────────── -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon-anim">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="success-title">Pengajuan Berhasil Dikirim!</h2>
+          <p class="success-sub">Permohonan izin Anda telah tercatat dalam sistem dan saat ini sedang menunggu verifikasi resmi dari Kepala Sekolah.</p>
+          <div class="ref-badge" id="refBadge">ID: IZN-2026-0801</div>
+          <button class="btn-step-next" onclick="window.location.href='dashboard-guru.html'">
+            Kembali ke Dashboard Utama ➔
+          </button>
+        </div>
+
+        <!-- ─── BOTTOM ACTIONS ────────────────── -->
+        <div class="form-bottom-actions" id="bottomActions">
+          <button class="btn-step-prev" id="btnPrev" style="visibility: hidden;">
+            ← Sebelumnya
+          </button>
+          <button class="btn-step-next" id="btnNext" disabled>
+            Pilih Jenis Izin ➔
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   DATA & STATE
+══════════════════════════════════════════════════════════════ */
+let currentStep = 1;
+let selectedType = null;
+let uploadedFile = null;
+
+const TYPE_CONFIG = {
+  sakit: { label: 'Sakit', icon: '🏥' },
+  dinas: { label: 'Perjalanan Dinas', icon: '✈️' },
+  izin:  { label: 'Izin Kegiatan Pribadi', icon: '📋' },
+  cuti:  { label: 'Cuti Tahunan', icon: '🏖️' }
+};
+
+/* ── DOM References ── */
+const $stepNodes = [1, 2, 3, 4].map(i => document.getElementById('stepNode' + i));
+const $stepPanels = [1, 2, 3, 4].map(i => document.getElementById('stepPanel' + i));
+const $btnPrev = document.getElementById('btnPrev');
+const $btnNext = document.getElementById('btnNext');
+const $bottomActions = document.getElementById('bottomActions');
+const $successScreen = document.getElementById('successScreen');
+const $typeCards = document.querySelectorAll('.type-card');
+
+const $tglMulai = document.getElementById('tanggalMulai');
+const $tglSelesai = document.getElementById('tanggalSelesai');
+const $keterangan = document.getElementById('keterangan');
+const $badgeDurasi = document.getElementById('badgeDurasi');
+const $chkDeclare = document.getElementById('chkDeclare');
+
+const $fileInput = document.getElementById('fileInput');
+const $uploadPreview = document.getElementById('uploadPreview');
+const $previewImg = document.getElementById('previewImg');
+const $previewFileName = document.getElementById('previewFileName');
+const $previewFileSize = document.getElementById('previewFileSize');
+const $btnRemoveFile = document.getElementById('btnRemoveFile');
+
+// Set default dates
+const todayStr = new Date().toISOString().split('T')[0];
+$tglMulai.value = todayStr;
+$tglSelesai.value = todayStr;
+
+/* ══════════════════════════════════════════════════════════════
+   STRICT FORM VALIDATION RULES
+══════════════════════════════════════════════════════════════ */
+function isStep1Valid() {
+  return selectedType !== null;
+}
+
+function isStep2Valid() {
+  return isStep1Valid() && 
+         $tglMulai.value !== '' && 
+         $tglSelesai.value !== '' && 
+         $keterangan.value.trim().length >= 5;
+}
+
+function isStep3Valid() {
+  return isStep2Valid() && uploadedFile !== null;
+}
+
+function isAllFormValid() {
+  return isStep3Valid() && $chkDeclare.checked;
+}
+
+function goToStep(step) {
+  if (step < 1 || step > 4) return;
+
+  // Enforce mandatory sequence: cannot skip ahead without completing previous steps
+  if (step >= 2 && !isStep1Valid()) return;
+  if (step >= 3 && !isStep2Valid()) return;
+  if (step >= 4 && !isStep3Valid()) return;
+
+  currentStep = step;
+
+  // Update stepper UI
+  $stepNodes.forEach((node, idx) => {
+    const s = idx + 1;
+    node.classList.remove('active', 'done');
+    if (s === currentStep) node.classList.add('active');
+    else if (s < currentStep) node.classList.add('done');
+  });
+
+  // Update panel UI
+  $stepPanels.forEach((panel, idx) => {
+    panel.classList.toggle('active', (idx + 1) === currentStep);
+  });
+
+  // Update buttons
+  $btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+  updateNextButton();
+
+  // Populate Review on Step 4
+  if (currentStep === 4) {
+    populateReview();
+  }
+}
+
+function updateNextButton() {
+  if (currentStep === 1) {
+    const valid = isStep1Valid();
+    $btnNext.disabled = !valid;
+    $btnNext.innerHTML = valid ? 'Lanjut ke Detail Tanggal ➔' : 'Pilih Jenis Izin ➔';
+  } else if (currentStep === 2) {
+    const valid = isStep2Valid();
+    $btnNext.disabled = !valid;
+    $btnNext.innerHTML = valid ? 'Lanjut ke Unggah Bukti ➔' : 'Lengkapi Tanggal & Alasan ➔';
+  } else if (currentStep === 3) {
+    const valid = uploadedFile !== null;
+    $btnNext.disabled = !valid;
+    $btnNext.innerHTML = valid ? 'Lanjut ke Konfirmasi ➔' : 'Wajib Unggah Dokumen Bukti ➔';
+  } else if (currentStep === 4) {
+    const allValid = isAllFormValid();
+    $btnNext.disabled = !allValid;
+
+    if (!isStep3Valid()) {
+      $btnNext.innerHTML = 'Formulir Belum Lengkap';
+    } else if (!$chkDeclare.checked) {
+      $btnNext.innerHTML = 'Centang Pernyataan Dahulu';
+    } else {
+      $btnNext.innerHTML = 'Kirim Pengajuan Sekarang ✓';
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SELECTIONS & INPUT LISTENERS
+══════════════════════════════════════════════════════════════ */
+function selectType(type) {
+  selectedType = type;
+  $typeCards.forEach(card => {
+    card.classList.toggle('selected', card.dataset.type === type);
+  });
+  updateNextButton();
+}
+
+function calculateDays() {
+  const d1 = new Date($tglMulai.value);
+  const d2 = new Date($tglSelesai.value);
+  if (isNaN(d1) || isNaN(d2)) return 1;
+  const diffTime = d2 - d1;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const count = diffDays > 0 ? diffDays : 1;
+  $badgeDurasi.textContent = count + ' Hari';
+  return count;
+}
+
+$tglMulai.addEventListener('change', () => {
+  if ($tglSelesai.value < $tglMulai.value) $tglSelesai.value = $tglMulai.value;
+  calculateDays();
+  updateNextButton();
+});
+
+$tglSelesai.addEventListener('change', () => {
+  if ($tglSelesai.value < $tglMulai.value) $tglSelesai.value = $tglMulai.value;
+  calculateDays();
+  updateNextButton();
+});
+
+$keterangan.addEventListener('input', updateNextButton);
+$chkDeclare.addEventListener('change', updateNextButton);
+
+/* ══════════════════════════════════════════════════════════════
+   FILE UPLOAD HANDLERS
+══════════════════════════════════════════════════════════════ */
+$fileInput.addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const isImg = file.type.startsWith('image/');
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    uploadedFile = {
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      dataUrl: e.target.result,
+      isImage: isImg
+    };
+    $previewFileName.textContent = uploadedFile.name;
+    $previewFileSize.textContent = uploadedFile.size;
+    
+    if (isImg) {
+      $previewImg.src = uploadedFile.dataUrl;
+      $previewImg.style.display = 'block';
+    } else {
+      $previewImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="%23059669" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+      $previewImg.style.display = 'block';
+    }
+
+    $uploadPreview.classList.add('show');
+    updateNextButton();
+  };
+  reader.readAsDataURL(file);
+});
+
+$btnRemoveFile.addEventListener('click', function (e) {
+  e.stopPropagation();
+  uploadedFile = null;
+  $fileInput.value = '';
+  $uploadPreview.classList.remove('show');
+  updateNextButton();
+});
+
+/* ══════════════════════════════════════════════════════════════
+   REVIEW & SUBMISSION
+══════════════════════════════════════════════════════════════ */
+function populateReview() {
+  const cfg = TYPE_CONFIG[selectedType] || { label: '-' };
+  document.getElementById('revType').textContent = cfg.label;
+  document.getElementById('revDurasi').textContent = calculateDays() + ' Hari';
+  document.getElementById('revMulai').textContent = $tglMulai.value;
+  document.getElementById('revSelesai').textContent = $tglSelesai.value;
+  document.getElementById('revKet').textContent = $keterangan.value.trim() || '-';
+  document.getElementById('revBukti').textContent = uploadedFile ? uploadedFile.name : 'Belum Ada Lampiran';
+
+  // Status Checklist Items
+  document.getElementById('valTextType').textContent = cfg.label;
+  document.getElementById('valTextDates').textContent = $tglMulai.value + ' s/d ' + $tglSelesai.value + ' (' + calculateDays() + ' Hari)';
+  document.getElementById('valTextReason').textContent = $keterangan.value.trim().length >= 5 ? 'Terisi Lengkap' : 'Belum Lengkap';
+  
+  const $chkItemFile = document.getElementById('chkItemFile');
+  const $valTextFile = document.getElementById('valTextFile');
+  const $chkFileIcon = document.getElementById('chkFileIcon');
+
+  if (uploadedFile) {
+    $chkItemFile.className = 'val-status-item';
+    $valTextFile.textContent = uploadedFile.name;
+    $chkFileIcon.textContent = '✓';
+  } else {
+    $chkItemFile.className = 'val-status-item missing';
+    $valTextFile.textContent = 'Wajib Dilampirkan';
+    $chkFileIcon.textContent = '✗';
+  }
+}
+
+$btnPrev.addEventListener('click', () => {
+  if (currentStep > 1) goToStep(currentStep - 1);
+});
+
+$btnNext.addEventListener('click', () => {
+  if (currentStep < 4) {
+    goToStep(currentStep + 1);
+  } else if (currentStep === 4) {
+    if (isAllFormValid()) {
+      submitForm();
+    }
+  }
+});
+
+function submitForm() {
+  $btnNext.disabled = true;
+  $btnNext.innerHTML = 'Mengirim Permohonan...';
+
+  const refId = 'IZN-' + new Date().getFullYear() + String(Date.now()).slice(-4);
+  const newSubmission = {
+    id: refId,
+    type: selectedType,
+    typeLabel: TYPE_CONFIG[selectedType]?.label || selectedType,
+    mulai: $tglMulai.value,
+    selesai: $tglSelesai.value,
+    durasi: calculateDays(),
+    ket: $keterangan.value.trim(),
+    bukti: uploadedFile ? uploadedFile.name : '-',
+    status: 'pending',
+    sentAt: new Date().toISOString()
+  };
+
+  // Save to sessionStorage
+  const existing = JSON.parse(sessionStorage.getItem('presensi_pengajuan') || '[]');
+  existing.unshift(newSubmission);
+  sessionStorage.setItem('presensi_pengajuan', JSON.stringify(existing));
+
+  setTimeout(() => {
+    $stepPanels.forEach(p => p.classList.remove('active'));
+    $bottomActions.style.display = 'none';
+    $successScreen.classList.add('show');
+    document.getElementById('refBadge').textContent = 'ID Pengajuan: ' + refId;
+  }, 1200);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dashboard Guru | Presensi Sekolah</title>
+  <meta name="description" content="Dashboard Presensi Guru — Jam Masuk, Jam Pulang, Lokasi Presensi, dan Pengajuan Izin." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     DASHBOARD WRAPPER
+═══════════════════════════════════════════ -->
+<div class="dashboard-layout">
+
+  <!-- ─── FLOATING SIDEBAR (VIOLET CAPSULE) ───── -->
+  <aside class="sidebar-capsule" aria-label="Navigasi Utama">
+    <!-- Top notification -->
+    <button class="side-btn notif-btn" id="btnNotif" title="Notifikasi">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      <span class="notif-dot"></span>
+    </button>
+
+    <!-- Nav items -->
+    <nav class="side-nav">
+      <!-- Dashboard / Home -->
+      <button class="side-item active" data-page="pageOverview" data-tooltip="Dashboard Utama" title="Dashboard Utama">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+      </button>
+
+      <!-- Riwayat -->
+      <button class="side-item" data-page="pageRiwayat" data-tooltip="Riwayat Kehadiran" title="Riwayat Kehadiran">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+      </button>
+
+      <!-- Rekap -->
+      <button class="side-item" data-page="pageRekap" data-tooltip="Rekap Kehadiran" title="Rekap Kehadiran">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+      </button>
+
+      <!-- Kegiatan -->
+      <button class="side-item" data-page="pageEvent" data-tooltip="Kegiatan Sekolah" title="Kegiatan Sekolah">
+        <div class="side-item-bg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+      </button>
+    </nav>
+
+    <!-- Bottom Logout -->
+    <button class="side-btn logout-btn" id="btnLogout" title="Keluar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </button>
+  </aside>
+
+  <!-- ─── MAIN CONTENT AREA ───────────────────── -->
+  <main class="main-dashboard">
+
+    <!-- Top Bar: Dashboard, Jam, Hari, dan User Profile -->
+    <header class="dashboard-header">
+      <div class="header-main-row">
+        <div class="header-titles">
+          <h1 class="header-main">Dashboard</h1>
+        </div>
+
+        <div class="user-profile-badge" id="btnOpenProfile" title="Klik untuk melihat Profil Pribadi">
+          <div class="user-avatar">
+            <img src="assets/img/profile-diah.jpg" alt="Foto Ibu Diah Safitri" class="avatar-img-circle" onerror="this.style.display='none'">
+          </div>
+          <div class="user-info-text">
+            <span class="user-name" id="userNameHeader">Ibu Diah Safitri, S.Pd</span>
+            <span class="user-role-tag" id="userRoleHeader">Guru Pengajar &bull; Profil ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jam dan Hari -->
+      <div class="header-clock-date-group">
+        <div class="live-clock-pill" id="liveClockBadge">
+          <span class="pulse-indicator"></span>
+          <span id="liveClock">--:--:-- WIB</span>
+        </div>
+        <div class="ov-date-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span id="currentDateText">Memuat tanggal...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ════ PAGE: OVERVIEW (MAIN PAGE) ════ -->
+    <section class="dashboard-page active" id="pageOverview" aria-label="Overview Dashboard">
+      
+      <!-- ─── KOTAK HIJAU BESAR (FULL SAMPAI BAWAH) ─── -->
+      <div class="gps-fullscreen-box">
+        <!-- Top bar inside GPS box -->
+        <div class="gps-box-header">
+          <div class="gps-title-row">
+            <div class="gps-icon-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+              </svg>
+            </div>
+            <h2 class="gps-title">Titik Lokasi & Radar Presensi</h2>
+          </div>
+
+          <div class="gps-top-status-group">
+            <div class="gps-header-tag">
+              <span class="pulse-indicator green-pulse"></span>
+              <span id="locBadgeText">Mendeteksi Lokasi GPS...</span>
+            </div>
+            <button class="btn-map-refresh-top" id="btnRefreshLoc" title="Perbarui Titik Lokasi">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ─── BARIS KETERANGAN UNIFIED TRANSLUCENT (JAM MASUK, LOKASI, JAM PULANG) ─── -->
+        <div class="metrics-translucent-bar">
+          <!-- Col 1: Jam Masuk -->
+          <div class="metric-segment left">
+            <div class="metric-segment-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="metric-segment-text">
+              <span class="metric-lbl">Jam Masuk</span>
+              <div class="metric-num" id="checkInTime">--:--:--</div>
+              <span class="metric-note" id="masukSub">Batas 07:15 WIB</span>
+            </div>
+          </div>
+
+          <!-- Col 2: Keterangan Lokasi (Center Segment) -->
+          <div class="metric-segment center">
+            <div class="metric-segment-icon loc">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div class="metric-segment-text">
+              <span class="metric-lbl">Keterangan Lokasi</span>
+              <div class="metric-num highlight" id="locNameDisplay">Sekolah Utama</div>
+              <span class="metric-note" id="locDistDisplay">Radius: 200m (Dalam Jangkauan)</span>
+            </div>
+          </div>
+
+          <!-- Col 3: Jam Pulang -->
+          <div class="metric-segment right">
+            <div class="metric-segment-icon orange">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+            </div>
+            <div class="metric-segment-text">
+              <span class="metric-lbl">Jam Pulang</span>
+              <div class="metric-num" id="checkOutTime">--:--:--</div>
+              <span class="metric-note" id="pulangSub">Mulai 14:00 WIB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center: Interactive Leaflet Map Container -->
+        <div class="gps-map-wrapper">
+          <div id="map"></div>
+
+          <!-- ─── FLOATING ACTION MENU DI BAGIAN BAWAH PETA (GAMBAR 2) ─── -->
+          <div class="map-floating-bottom-deck">
+            
+            <!-- CARD 1: PRESENSI KAMERA -->
+            <div class="action-card-slim" id="cardPresensi" onclick="window.location.href='presensi-kamera.html'">
+              <div class="card-slim-left">
+                <div class="card-slim-icon icon-presensi">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                </div>
+                <div class="card-slim-info">
+                  <div class="card-slim-title-row">
+                    <h3 class="card-slim-title">Presensi Kamera</h3>
+                    <span class="card-slim-badge green" id="presensiStatusPill">Hadir Lengkap</span>
+                  </div>
+                  <p class="card-slim-sub">Foto Wajah & Verifikasi Geotagging GPS Real-time</p>
+                </div>
+              </div>
+
+              <div class="card-slim-right">
+                <button class="btn-card-action btn-presensi-action" id="btnPresensi">
+                  Buka Kamera
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 2: AJUKAN IZIN / SAKIT / DINAS -->
+            <div class="action-card-slim" id="cardPengajuan" onclick="window.location.href='pengajuan-izin.html'">
+              <div class="card-slim-left">
+                <div class="card-slim-icon icon-izin">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                </div>
+                <div class="card-slim-info">
+                  <div class="card-slim-title-row">
+                    <h3 class="card-slim-title">Ajukan Izin / Sakit / Dinas</h3>
+                    <span class="card-slim-badge green" id="kuotaIzinText">12 Hari Sisa</span>
+                  </div>
+                  <p class="card-slim-sub">Formulir Pengajuan Surat Izin & Dokumen Pendukung</p>
+                </div>
+              </div>
+
+              <div class="card-slim-right">
+                <button class="btn-card-action btn-izin-action">
+                  Ajukan Surat
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════ PAGE: RIWAYAT ════ -->
+    <section class="dashboard-page" id="pageRiwayat" aria-label="Halaman Riwayat">
+      <div class="subpage-card">
+        <!-- Summary Cards (Pengecualian Kehadiran) -->
+        <div class="summary-row">
+          <div class="summary-card amber">
+            <span class="summary-icon">⚠️</span>
+            <span class="summary-val" id="riwTerlambat">1</span>
+            <span class="summary-lbl">Terlambat</span>
+          </div>
+          <div class="summary-card orange">
+            <span class="summary-icon">⏰</span>
+            <span class="summary-val" id="riwLupaPulang">1</span>
+            <span class="summary-lbl">Lupa Pulang</span>
+          </div>
+          <div class="summary-card blue">
+            <span class="summary-icon">📋</span>
+            <span class="summary-val" id="riwIzin">2</span>
+            <span class="summary-lbl">Izin & Sakit</span>
+          </div>
+          <div class="summary-card red">
+            <span class="summary-icon">❌</span>
+            <span class="summary-val" id="riwAlpha">1</span>
+            <span class="summary-lbl">Alpha</span>
+          </div>
+        </div>
+
+        <!-- History Section: Hanya Izin, Sakit, Alpha, Terlambat, Lupa Pulang -->
+        <div class="section-box">
+          <div class="section-box-header">
+            <h3 class="section-box-title">Catatan Pengecualian Presensi (Izin, Sakit, Alpha, Terlambat, Lupa Pulang)</h3>
+            <select class="month-picker" id="monthPicker">
+              <option value="7">Agustus 2026</option>
+              <option value="6">Juli 2026</option>
+              <option value="5">Juni 2026</option>
+            </select>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- Riwayat Pengajuan Izin -->
+        <div class="section-box" id="pengajuanCard">
+          <div class="section-box-header">
+            <h3 class="section-box-title">Daftar Pengajuan Izin / Dinas</h3>
+            <a href="pengajuan-izin.html" class="btn-link-action">+ Buat Baru</a>
+          </div>
+          <div class="pengajuan-list" id="pengajuanList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ PAGE: REKAP ════ -->
+    <section class="dashboard-page" id="pageRekap" aria-label="Halaman Rekap">
+      <div class="subpage-card rekap-page-card">
+        
+        <div class="rekap-split-grid">
+          
+          <!-- ─── KOLOM KIRI: KALENDER KEHADIRAN ─── -->
+          <div class="rekap-left-col">
+            <div class="cal-presence-box">
+              <div class="cal-presence-header">
+                <h3 class="cal-presence-title">Agustus 2026</h3>
+                <span class="badge-pill">Kalender Presensi</span>
+              </div>
+
+              <!-- Calendar Table Grid -->
+              <div class="cal-grid-wrapper">
+                <div class="cal-days-row">
+                  <span class="cal-day-head">S</span>
+                  <span class="cal-day-head">M</span>
+                  <span class="cal-day-head">T</span>
+                  <span class="cal-day-head">W</span>
+                  <span class="cal-day-head">T</span>
+                  <span class="cal-day-head">F</span>
+                  <span class="cal-day-head">S</span>
+                </div>
+
+                <div class="cal-matrix-grid">
+                  <!-- Row 1 -->
+                  <div class="cal-date-cell muted"><span class="c-num">26</span></div>
+                  <div class="cal-date-cell muted"><span class="c-num">27</span></div>
+                  <div class="cal-date-cell muted"><span class="c-num">28</span></div>
+                  <div class="cal-date-cell muted"><span class="c-num">29</span></div>
+                  <div class="cal-date-cell muted"><span class="c-num">30</span></div>
+                  <div class="cal-date-cell muted"><span class="c-num">31</span></div>
+                  <div class="cal-date-cell"><span class="c-num">1</span></div>
+
+                  <!-- Row 2 -->
+                  <div class="cal-date-cell"><span class="c-num">2</span></div>
+                  <div class="cal-date-cell"><span class="c-num">3</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">4</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">5</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">6</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">7</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">8</span><span class="c-dot green"></span></div>
+
+                  <!-- Row 3 -->
+                  <div class="cal-date-cell"><span class="c-num">9</span></div>
+                  <div class="cal-date-cell"><span class="c-num">10</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">11</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">12</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">13</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">14</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">15</span></div>
+
+                  <!-- Row 4 -->
+                  <div class="cal-date-cell"><span class="c-num">16</span></div>
+                  <div class="cal-date-cell"><span class="c-num">17</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">18</span><span class="c-dot amber"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">19</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell active-today"><span class="c-num">20</span><span class="c-dot red"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">21</span><span class="c-dot green"></span></div>
+                  <div class="cal-date-cell"><span class="c-num">22</span></div>
+
+                  <!-- Row 5 -->
+                  <div class="cal-date-cell"><span class="c-num">23</span></div>
+                  <div class="cal-date-cell"><span class="c-num">24</span></div>
+                  <div class="cal-date-cell"><span class="c-num">25</span></div>
+                  <div class="cal-date-cell"><span class="c-num">26</span></div>
+                  <div class="cal-date-cell"><span class="c-num">27</span></div>
+                  <div class="cal-date-cell"><span class="c-num">28</span></div>
+                  <div class="cal-date-cell"><span class="c-num">29</span></div>
+                </div>
+              </div>
+
+              <!-- Calendar Legend -->
+              <div class="cal-legend-row">
+                <div class="c-leg-item"><span class="c-leg-dot red"></span> Kurang</div>
+                <div class="c-leg-item"><span class="c-leg-dot amber"></span> Terlambat</div>
+                <div class="c-leg-item"><span class="c-leg-dot green"></span> Normal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── KOLOM KANAN: JAM KERJA & REKAP STATISTIK ─── -->
+          <div class="rekap-right-col">
+            
+            <!-- Card 1: Kotak Keterangan Jam Kerja -->
+            <div class="work-hours-box">
+              <div class="work-hours-header">
+                <h3 class="work-hours-title">Jam Kerja</h3>
+              </div>
+              <div class="work-hours-body">
+                <div class="wh-section">
+                  <h4 class="wh-section-title">Reguler:</h4>
+                  <ul class="wh-list">
+                    <li><b>Senin - Kamis:</b> 07.30 - 16.00 WIB <span>(Istirahat 12.00 - 13.00 WIB)</span></li>
+                    <li><b>Jumat:</b> 07.30 - 16.30 WIB <span>(Istirahat 11.30 - 13.00 WIB)</span></li>
+                  </ul>
+                </div>
+
+                <div class="wh-section">
+                  <h4 class="wh-section-title">Ramadhan:</h4>
+                  <ul class="wh-list">
+                    <li><b>Senin - Kamis:</b> 08.00 - 15.00 WIB <span>(Istirahat 12.00 - 13.00 WIB)</span></li>
+                    <li><b>Jumat:</b> 08.00 - 15.30 WIB <span>(Istirahat 11.30 - 13.00 WIB)</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Rekap Statistik Kehadiran (Di bawah Jam Kerja) -->
+            <div class="section-box rekap-stat-box">
+              <div class="section-box-header">
+                <h3 class="section-box-title">Rekap Statistik Kehadiran</h3>
+                <span class="badge-pill">Agustus 2026</span>
+              </div>
+
+              <!-- Donut Chart Area -->
+              <div class="donut-wrapper">
+                <svg class="donut-chart" viewBox="0 0 120 120" width="145" height="145">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="13"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="13"
+                    stroke-dasharray="188 126" stroke-dashoffset="0" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="13"
+                    stroke-dasharray="40 274" stroke-dashoffset="-188" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#ef4444" stroke-width="13"
+                    stroke-dasharray="20 294" stroke-dashoffset="-228" stroke-linecap="round"/>
+                  <text x="60" y="55" text-anchor="middle" font-size="20" font-weight="800" fill="#1e293b">88%</text>
+                  <text x="60" y="71" text-anchor="middle" font-size="8.5" font-weight="700" fill="#64748b">Tingkat Hadir</text>
+                </svg>
+                <div class="donut-legend">
+                  <div class="legend-item"><span class="dot green"></span> Hadir <strong>17 hari</strong></div>
+                  <div class="legend-item"><span class="dot amber"></span> Terlambat <strong>3 hari</strong></div>
+                  <div class="legend-item"><span class="dot red"></span> Alpha <strong>1 hari</strong></div>
+                  <div class="legend-item"><span class="dot blue"></span> Izin/Sakit <strong>1 hari</strong></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════ PAGE: EVENT / KEGIATAN ════ -->
+    <section class="dashboard-page" id="pageEvent" aria-label="Halaman Kegiatan">
+      <div class="subpage-card">
+        <div class="event-hero-card">
+          <span class="event-tag-badge">Agenda Terdekat</span>
+          <h3 class="event-hero-title">Upacara Bendera & Pembinaan</h3>
+          <p class="event-hero-date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Senin, 25 Agustus 2026 &bull; 07:00 WIB
+          </p>
+          <p class="event-hero-desc">Wajib bagi seluruh Bapak/Ibu Guru dan Staf Tata Usaha Sekolah.</p>
+        </div>
+
+        <div class="section-box">
+          <h3 class="section-box-title mb-12">Semua Jadwal Kegiatan</h3>
+          <div class="event-list" id="eventList"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ─── TOAST NOTIFICATION ─────────────────── -->
+<div class="toast" id="toastNotif" role="status" aria-live="polite"></div>
+
+<!-- ─── MODAL INFORMASI PRIBADI GURU ───────── -->
+<div class="modal-backdrop" id="modalProfileBackdrop">
+  <div class="modal-box modal-profile-box" id="modalProfileBox">
+    <!-- Close button X -->
+    <button class="modal-close-x" id="modalProfileClose" title="Tutup">✕</button>
+    
+    <!-- Top banner background -->
+    <div class="profile-modal-banner"></div>
+
+    <!-- Avatar Image with status badge -->
+    <div class="profile-modal-avatar-wrapper">
+      <img src="assets/img/profile-diah.jpg" alt="Ibu Diah Safitri, S.Pd" class="profile-modal-avatar-img">
+      <span class="profile-active-status" title="Aktif Mengajar"></span>
+    </div>
+
+    <!-- Name & Title -->
+    <div class="profile-modal-head">
+      <h3 class="profile-modal-name">Ibu Diah Safitri, S.Pd</h3>
+      <span class="profile-modal-nip">NIP: 19890412 201402 2 003</span>
+      <div class="profile-modal-role-badge">Guru Bahasa Indonesia &bull; Wali Kelas VII-B</div>
+    </div>
+
+    <!-- Personal & Employment Details Grid -->
+    <div class="profile-details-grid">
+      
+      <div class="profile-detail-item">
+        <span class="p-detail-label">Status Kepegawaian</span>
+        <span class="p-detail-val"><span class="p-pill-status green">PNS / Guru Tetap</span></span>
+      </div>
+
+      <div class="profile-detail-item">
+        <span class="p-detail-label">NUPTK</span>
+        <span class="p-detail-val">4741 7676 6821 0032</span>
+      </div>
+
+      <div class="profile-detail-item">
+        <span class="p-detail-label">Unit Sekolah</span>
+        <span class="p-detail-val">SMP Negeri 1 Surabaya</span>
+      </div>
+
+      <div class="profile-detail-item">
+        <span class="p-detail-label">Email Kedinasan</span>
+        <span class="p-detail-val text-truncate">diah.safitri@sekolah.sch.id</span>
+      </div>
+
+      <div class="profile-detail-item">
+        <span class="p-detail-label">No. WhatsApp / HP</span>
+        <span class="p-detail-val">+62 812-3456-7890</span>
+      </div>
+
+      <div class="profile-detail-item">
+        <span class="p-detail-label">Jam Kerja</span>
+        <span class="p-detail-val">07:00 - 15:30 WIB (Senin - Jumat)</span>
+      </div>
+
+    </div>
+
+    <!-- Action Footer -->
+    <div class="profile-modal-actions">
+      <button class="btn-profile-close" id="btnProfileCloseBottom">Tutup Informasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL PEMBERITAHUAN & NOTIFIKASI ──── -->
+<div class="modal-backdrop" id="modalNotifBackdrop">
+  <div class="modal-box modal-notif-box" id="modalNotifBox">
+    <!-- Header -->
+    <div class="notif-modal-header">
+      <div class="notif-header-left">
+        <div class="notif-icon-circle">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <div>
+          <h3 class="notif-modal-title">Pemberitahuan</h3>
+          <span class="notif-modal-sub" id="notifUnreadBadge">2 Belum Dibaca</span>
+        </div>
+      </div>
+      <div class="notif-header-right">
+        <button class="btn-mark-all-read" id="btnMarkAllRead" title="Tandai semua sudah dibaca">Tandai Dibaca</button>
+        <button class="modal-notif-close-x" id="modalNotifClose" title="Tutup">✕</button>
+      </div>
+    </div>
+
+    <!-- Body / List -->
+    <div class="notif-modal-body" id="notifListContainer">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- Footer -->
+    <div class="notif-modal-footer">
+      <button class="btn-notif-close-full" id="btnNotifCloseBottom">Tutup Pemberitahuan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL CONFIRM LOGOUT ───────────────── -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </div>
+    <h3 class="modal-title" id="modalTitle">Konfirmasi Keluar</h3>
+    <p class="modal-body" id="modalBody">Apakah Anda yakin ingin keluar dari sesi Dashboard Guru?</p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" id="modalCancel">Batal</button>
+      <button class="modal-btn-confirm" id="modalConfirm">Keluar</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/dashboard.js"></script>
+</body>
+</html>
+

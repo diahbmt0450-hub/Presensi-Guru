@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Presensi Kamera | Absensi Guru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #1a56db;
+      --blue-light: #3b82f6;
+      --green:      #10b981;
+      --red:        #ef4444;
+      --text:       #1e293b;
+      --card:       #ffffff;
+      --bg:         #0a0f1e;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    .camera-shell {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    /* ─── VIDEO FEED ─────────────────────────── */
+    .camera-view {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #videoEl {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* mirror selfie */
+    }
+
+    #canvasEl { display: none; }
+
+    /* Overlay frame */
+    .cam-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    /* Face guide oval */
+    .face-guide {
+      width: 200px;
+      height: 240px;
+      border: 3px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4000px rgba(0,0,0,0.45);
+      position: relative;
+    }
+
+    /* Corner markers */
+    .face-guide::before,
+    .face-guide::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #fff;
+      border-style: solid;
+    }
+
+    .face-guide::before {
+      top: -3px; left: -3px;
+      border-width: 3px 0 0 3px;
+      border-radius: 4px 0 0 0;
+    }
+
+    .face-guide::after {
+      bottom: -3px; right: -3px;
+      border-width: 0 3px 3px 0;
+      border-radius: 0 0 4px 0;
+    }
+
+    .guide-label {
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.5);
+      padding: 4px 14px;
+      border-radius: 50px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* Scanning line animation */
+    .scan-line {
+      position: absolute;
+      left: 3px; right: 3px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blue-light), transparent);
+      top: 0;
+      animation: scanMove 2s ease-in-out infinite;
+      border-radius: 2px;
+    }
+
+    @keyframes scanMove {
+      0%   { top: 0; opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: calc(100% - 2px); opacity: 0; }
+    }
+
+    /* Status bar on top of camera */
+    .cam-status-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 16px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .cam-back-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .cam-back-btn:hover { background: rgba(255,255,255,0.3); }
+
+    .cam-title {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .cam-switch-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .cam-switch-btn:hover { background: rgba(255,255,255,0.3); }
+
+    /* Captured preview */
+    #photoPreview {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      transform: scaleX(-1);
+    }
+
+    /* ─── BOTTOM CONTROLS ────────────────────── */
+    .cam-controls {
+      background: var(--bg);
+      padding: 20px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Info row */
+    .cam-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
+
+    .cam-info-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .cam-info-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .cam-info-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cam-info-val.green { color: #34d399; }
+
+    /* Shutter row */
+    .shutter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      width: 100%;
+    }
+
+    /* Galeri button */
+    .gallery-btn {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm, 10px);
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.7);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Shutter button */
+    .shutter-btn {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: #fff;
+      border: 5px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(255,255,255,0.25);
+      position: relative;
+    }
+
+    .shutter-btn::after {
+      content: '';
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      transition: all 0.15s ease;
+    }
+
+    .shutter-btn:hover { transform: scale(1.06); }
+    .shutter-btn:active::after { width: 44px; height: 44px; }
+
+    /* Confirm button (hidden until photo taken) */
+    .confirm-btn {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--green) 0%, #34d399 100%);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+    }
+
+    .confirm-btn.show { display: flex; }
+    .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(16,185,129,0.5); }
+
+    .retake-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
+    }
+
+    .retake-btn.show { display: block; }
+
+    /* Permission overlay */
+    .perm-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,15,30,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px;
+      text-align: center;
+      z-index: 50;
+    }
+
+    .perm-icon {
+      font-size: 48px;
+    }
+
+    .perm-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .perm-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    .perm-btn {
+      padding: 12px 32px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .perm-btn:hover { background: var(--blue-light); }
+
+    /* Success overlay */
+    .success-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(16,185,129,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 100;
+      animation: popIn 0.3s ease;
+    }
+
+    .success-overlay.show { display: flex; }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .success-icon {
+      width: 80px; height: 80px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+
+    .success-title { font-size: 24px; font-weight: 800; color: #fff; }
+    .success-time  { font-size: 40px; font-weight: 800; color: #fff; letter-spacing: 0.03em; }
+    .success-sub   { font-size: 14px; color: rgba(255,255,255,0.8); }
+  </style>
+</head>
+<body>
+
+<div class="camera-shell">
+
+  <!-- ─── CAMERA VIEW ───────────────────────── -->
+  <div class="camera-view" id="cameraView">
+    <video id="videoEl" autoplay playsinline muted></video>
+    <canvas id="canvasEl"></canvas>
+    <img id="photoPreview" alt="Foto presensi" />
+
+    <!-- Status bar -->
+    <div class="cam-status-bar">
+      <button class="cam-back-btn" id="btnBack" aria-label="Kembali">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span class="cam-title">Foto Presensi</span>
+      <button class="cam-switch-btn" id="btnSwitch" aria-label="Ganti kamera">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <path d="M 17 13 A 5 5 0 1 1 7 13" stroke-width="2" fill="none"/>
+          <polyline points="17 8 17 13 12 13"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="cam-overlay">
+      <div class="face-guide">
+        <div class="scan-line" id="scanLine"></div>
+        <span class="guide-label" id="guideLabel">Posisikan wajah di sini</span>
+      </div>
+    </div>
+
+    <!-- Permission overlay -->
+    <div class="perm-overlay" id="permOverlay" style="display:none;">
+      <div class="perm-icon">📷</div>
+      <div class="perm-title">Izin Kamera Diperlukan</div>
+      <p class="perm-desc">Aplikasi membutuhkan akses kamera untuk mengambil foto presensi. Klik tombol di bawah untuk mengizinkan.</p>
+      <button class="perm-btn" id="btnPermission">Izinkan Kamera</button>
+    </div>
+
+    <!-- Success overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="success-title">Presensi Berhasil!</div>
+      <div class="success-time" id="successTime">07:15:32</div>
+      <div class="success-sub" id="successType">Masuk — Sekolah Utama</div>
+    </div>
+  </div>
+
+  <!-- ─── BOTTOM CONTROLS ───────────────────── -->
+  <div class="cam-controls">
+
+    <!-- Info row -->
+    <div class="cam-info">
+      <div class="cam-info-item">
+        <span class="cam-info-label">Waktu</span>
+        <span class="cam-info-val" id="camClock">--:--:--</span>
+      </div>
+      <div class="cam-info-item">
+        <span class="cam-info-label">Tanggal</span>
+        <span class="cam-info-val" id="camDate">--</span>
+      </div>
+      <div class="cam-info-item">
+        <span class="cam-info-label">Status</span>
+        <span class="cam-info-val green" id="camStatus">Masuk</span>
+      </div>
+      <div class="cam-info-item">
+        <span class="cam-info-label">Lokasi</span>
+        <span class="cam-info-val" id="camLoc" style="font-size:12px;">Sekolah</span>
+      </div>
+    </div>
+
+    <!-- Shutter row -->
+    <div class="shutter-row">
+      <div class="gallery-btn" title="Tidak tersedia">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+      <button class="shutter-btn" id="btnShutter" aria-label="Ambil foto"></button>
+      <div class="gallery-btn" style="opacity:0; pointer-events:none;"></div>
+    </div>
+
+    <!-- Confirm -->
+    <button class="confirm-btn" id="btnConfirm">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Konfirmasi Presensi
+    </button>
+
+    <button class="retake-btn" id="btnRetake">Ambil ulang foto</button>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+/* ─── ELEMENTS ──────────────────────────────── */
+const videoEl       = document.getElementById('videoEl');
+const canvasEl      = document.getElementById('canvasEl');
+const photoPreview  = document.getElementById('photoPreview');
+const btnShutter    = document.getElementById('btnShutter');
+const btnConfirm    = document.getElementById('btnConfirm');
+const btnRetake     = document.getElementById('btnRetake');
+const btnBack       = document.getElementById('btnBack');
+const btnSwitch     = document.getElementById('btnSwitch');
+const btnPermission = document.getElementById('btnPermission');
+const permOverlay   = document.getElementById('permOverlay');
+const successOverlay= document.getElementById('successOverlay');
+const successTime   = document.getElementById('successTime');
+const successType   = document.getElementById('successType');
+const camClock      = document.getElementById('camClock');
+const camDate       = document.getElementById('camDate');
+const camStatus     = document.getElementById('camStatus');
+const camLoc        = document.getElementById('camLoc');
+const guideLabel    = document.getElementById('guideLabel');
+const scanLine      = document.getElementById('scanLine');
+
+/* ─── STATE ──────────────────────────────────── */
+let currentStream   = null;
+let useFrontCamera  = true;
+let photoTaken      = false;
+
+/* ─── CLOCK ──────────────────────────────────── */
+function updateCamClock() {
+  const now = new Date();
+  const h   = String(now.getHours()).padStart(2, '0');
+  const m   = String(now.getMinutes()).padStart(2, '0');
+  const s   = String(now.getSeconds()).padStart(2, '0');
+  camClock.textContent = `${h}:${m}:${s}`;
+
+  const days  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months= ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  camDate.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+}
+
+setInterval(updateCamClock, 1000);
+updateCamClock();
+
+/* ─── CHECK STATUS FROM SESSION ─────────────── */
+(function checkStatus() {
+  const today = JSON.parse(sessionStorage.getItem('presensi_today') || 'null');
+  if (today && today.masuk && !today.pulang) {
+    camStatus.textContent   = 'Pulang';
+    camStatus.style.color   = '#fbbf24';
+  }
+  const locText = (new URLSearchParams(location.search).get('lokasi')) || 'Sekolah';
+  camLoc.textContent = locText;
+})();
+
+/* ─── START CAMERA ───────────────────────────── */
+async function startCamera(front = true) {
+  if (currentStream) {
+    currentStream.getTracks().forEach(t => t.stop());
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: front ? 'user' : 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false,
+    });
+    currentStream   = stream;
+    videoEl.srcObject = stream;
+    permOverlay.style.display = 'none';
+    guideLabel.textContent = 'Posisikan wajah di sini';
+  } catch (err) {
+    permOverlay.style.display = 'flex';
+    console.warn('Camera error:', err);
+  }
+}
+
+/* ─── BACK ───────────────────────────────────── */
+btnBack.addEventListener('click', function () {
+  if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+  window.location.href = 'dashboard-guru.html';
+});
+
+/* ─── SWITCH CAMERA ──────────────────────────── */
+btnSwitch.addEventListener('click', function () {
+  useFrontCamera = !useFrontCamera;
+  startCamera(useFrontCamera);
+});
+
+/* ─── PERMISSION RETRY ───────────────────────── */
+btnPermission.addEventListener('click', function () {
+  startCamera(useFrontCamera);
+});
+
+/* ─── SHUTTER ────────────────────────────────── */
+btnShutter.addEventListener('click', function () {
+  if (!videoEl.srcObject) { return; }
+
+  // Capture frame
+  canvasEl.width  = videoEl.videoWidth  || 640;
+  canvasEl.height = videoEl.videoHeight || 480;
+  const ctx = canvasEl.getContext('2d');
+  ctx.save();
+  ctx.scale(-1, 1);
+  ctx.drawImage(videoEl, -canvasEl.width, 0, canvasEl.width, canvasEl.height);
+  ctx.restore();
+
+  const dataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
+
+  // Show preview
+  photoPreview.src     = dataUrl;
+  photoPreview.style.display = 'block';
+  videoEl.style.display      = 'none';
+  photoTaken = true;
+
+  // Show confirm / retake
+  btnConfirm.classList.add('show');
+  btnRetake.classList.add('show');
+  btnShutter.style.display = 'none';
+  scanLine.style.display   = 'none';
+  guideLabel.textContent   = 'Periksa foto Anda';
+});
+
+/* ─── RETAKE ─────────────────────────────────── */
+btnRetake.addEventListener('click', function () {
+  photoPreview.style.display = 'none';
+  videoEl.style.display      = 'block';
+  photoTaken = false;
+
+  btnConfirm.classList.remove('show');
+  btnRetake.classList.remove('show');
+  btnShutter.style.display = 'block';
+  scanLine.style.display   = 'block';
+  guideLabel.textContent   = 'Posisikan wajah di sini';
+});
+
+/* ─── CONFIRM PRESENSI ───────────────────────── */
+btnConfirm.addEventListener('click', function () {
+  const now   = new Date();
+  const h     = String(now.getHours()).padStart(2, '0');
+  const m     = String(now.getMinutes()).padStart(2, '0');
+  const s     = String(now.getSeconds()).padStart(2, '0');
+  const timeStr = `${h}:${m}:${s}`;
+
+  // Determine masuk / pulang
+  const today = JSON.parse(sessionStorage.getItem('presensi_today') || 'null') || {};
+
+  if (!today.masuk) {
+    today.masuk = timeStr;
+    sessionStorage.setItem('presensi_today', JSON.stringify(today));
+    successType.textContent = `Presensi Masuk — ${camLoc.textContent}`;
+    camStatus.textContent   = 'Masuk';
+  } else {
+    today.pulang = timeStr;
+    sessionStorage.setItem('presensi_today', JSON.stringify(today));
+    successType.textContent = `Presensi Pulang — ${camLoc.textContent}`;
+  }
+
+  successTime.textContent = timeStr;
+
+  // Stop camera
+  if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+
+  // Show success
+  successOverlay.classList.add('show');
+
+  // Redirect back after 2.5s
+  setTimeout(function () {
+    window.location.href = 'dashboard-guru.html';
+  }, 2500);
+});
+
+/* ─── INIT ───────────────────────────────────── */
+startCamera(true);
+</script>
+</body>
+</html>
