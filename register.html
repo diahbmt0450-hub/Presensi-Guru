@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pendaftaran Akun Guru | Presensi Sekolah</title>
+  <meta name="description" content="Formulir pendaftaran akun baru guru dan tenaga pendidik pada sistem presensi sekolah." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary-green: #10b981;
+      --primary-dark:  #059669;
+      --primary-deep:  #047857;
+      --accent:        #a78bfa;
+      --danger:        #ef4444;
+      --amber:         #f59e0b;
+      --card-bg:       rgba(10, 15, 48, 0.76);
+      --input-bg:      rgba(255, 255, 255, 0.08);
+      --input-border:  rgba(255, 255, 255, 0.18);
+      --glass-border:  rgba(255, 255, 255, 0.14);
+      --text-white:    #ffffff;
+      --text-soft:     rgba(255, 255, 255, 0.82);
+      --text-muted:    rgba(255, 255, 255, 0.55);
+      --radius-sm:     12px;
+      --radius-md:     18px;
+      --radius-lg:     28px;
+      --radius-pill:   50px;
+      --shadow-card:   0 40px 100px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.35);
+      --transition:    all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 14px;
+      color: var(--text-white);
+      background: #060a20;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .bg-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(0.55) saturate(1.2);
+    }
+
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(5, 8, 30, 0.72) 0%, rgba(10, 20, 60, 0.55) 50%, rgba(5, 10, 35, 0.75) 100%);
+    }
+
+    /* ── PARTICLES ── */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      animation: floatUp linear infinite;
+    }
+
+    .particle:nth-child(1) { width: 8px;  height: 8px;  left: 10%; animation-duration: 12s; top: 90%; }
+    .particle:nth-child(2) { width: 14px; height: 14px; left: 30%; animation-duration: 16s; top: 90%; }
+    .particle:nth-child(3) { width: 6px;  height: 6px;  left: 50%; animation-duration: 11s; top: 90%; }
+    .particle:nth-child(4) { width: 10px; height: 10px; left: 75%; animation-duration: 14s; top: 90%; }
+    .particle:nth-child(5) { width: 7px;  height: 7px;  left: 90%; animation-duration: 13s; top: 90%; }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0); opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .main-wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 36px 40px;
+      position: relative;
+    }
+
+    /* Header */
+    .card-top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .btn-back-login {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-soft);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: var(--transition);
+    }
+
+    .btn-back-login:hover {
+      background: rgba(255,255,255,0.18);
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .logo-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(5, 150, 105, 0.45));
+      border: 1.5px solid rgba(16, 185, 129, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      color: #34d399;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .title-accent {
+      background: linear-gradient(90deg, #34d399, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    /* Notice Banner */
+    .notice-box {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .notice-icon {
+      color: #fbbf24;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .notice-text {
+      font-size: 12px;
+      color: #fde68a;
+      line-height: 1.45;
+    }
+
+    /* Form Grid */
+    .form-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-label span.req {
+      color: #f87171;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13px;
+      transition: var(--transition);
+    }
+
+    .form-select {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    .form-select option {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-pwd-toggle {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .btn-pwd-toggle:hover {
+      color: #ffffff;
+    }
+
+    /* Avatar Upload Row */
+    .avatar-upload-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px dashed rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .avatar-upload-box:hover {
+      border-color: var(--primary-green);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .avatar-preview-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid var(--primary-green);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-preview-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .avatar-upload-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .avatar-upload-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .avatar-upload-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Terms */
+    .terms-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .terms-box input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--primary-green);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Submit Button */
+    .btn-register-submit {
+      width: 100%;
+      padding: 13px;
+      margin-top: 20px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-register-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-register-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ── SUCCESS SCREEN (PENDING VERIFICATION) ── */
+    .success-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px 10px;
+    }
+
+    .success-panel.show {
+      display: flex;
+    }
+
+    .pending-icon-anim {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.2);
+      border: 2px solid rgba(245, 158, 11, 0.6);
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.35);
+      animation: pulsePending 2s infinite;
+    }
+
+    @keyframes pulsePending {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .pending-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .pending-desc {
+      font-size: 13.5px;
+      color: var(--text-soft);
+      max-width: 480px;
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .status-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .btn-return-login {
+      padding: 12px 32px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: #ffffff;
+      color: #0f172a;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-return-login:hover {
+      background: #f1f5f9;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .register-card {
+        padding: 24px 18px;
+      }
+
+      .form-grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-wrapper">
+    <img src="assets/img/bg-login.jpg" alt="Background Sekolah" class="bg-image" />
+    <div class="bg-overlay"></div>
+    <div class="particles">
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+    </div>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="register-card">
+
+      <!-- ─── FORM CONTAINER ─── -->
+      <div id="registerFormContainer">
+        
+        <!-- Top Nav -->
+        <div class="card-top-nav">
+          <a href="login.html" class="btn-back-login">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Kembali ke Login
+          </a>
+          <span style="font-size: 11.5px; color: var(--text-muted);">Sistem Presensi Sekolah</span>
+        </div>
+
+        <!-- Header -->
+        <div class="card-header">
+          <div class="logo-circle">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="22" y1="11" x2="16" y2="11"></line>
+            </svg>
+          </div>
+          <h1 class="card-title">Pendaftaran <span class="title-accent">Akun Guru</span></h1>
+          <p class="card-subtitle">Lengkapi identitas pendidik untuk permohonan akun presensi resmi</p>
+        </div>
+
+        <!-- Notice Box -->
+        <div class="notice-box">
+          <div class="notice-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="notice-text">
+            <b>Pemberitahuan:</b> Akun guru baru tidak dapat langsung digunakan untuk login. Setelah pendaftaran selesai, akun Anda akan diverifikasi dan disetujui (*ACC*) terlebih dahulu oleh Administrator Sekolah / Kepala Sekolah.
+          </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="regForm" novalidate>
+          <div class="form-grid-2col">
+
+            <!-- 1. Nama Lengkap & Gelar -->
+            <div class="form-group">
+              <label class="form-label" for="regName">
+                Nama Lengkap & Gelar <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </span>
+                <input type="text" id="regName" class="form-input" placeholder="Contoh: Ibu Diah Safitri, S.Pd" required />
+              </div>
+            </div>
+
+            <!-- 2. NIP -->
+            <div class="form-group">
+              <label class="form-label" for="regNip">
+                NIP (Nomor Induk Pegawai) <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                    <line x1="7" y1="8" x2="17" y2="8"></line>
+                    <line x1="7" y1="12" x2="13" y2="12"></line>
+                  </svg>
+                </span>
+                <input type="text" id="regNip" class="form-input" placeholder="18 Digit NIP Pegawai" required />
+              </div>
+            </div>
+
+            <!-- 3. NUPTK -->
+            <div class="form-group">
+              <label class="form-label" for="regNuptk">
+                NUPTK <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </span>
+                <input type="text" id="regNuptk" class="form-input" placeholder="16 Digit NUPTK" required />
+              </div>
+            </div>
+
+            <!-- 4. Mata Pelajaran / Tugas -->
+            <div class="form-group">
+              <label class="form-label" for="regMapel">
+                Mata Pelajaran & Tugas <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </span>
+                <input type="text" id="regMapel" class="form-input" placeholder="Contoh: Guru Bahasa Indonesia & Wali Kelas" required />
+              </div>
+            </div>
+
+            <!-- 5. Status Kepegawaian -->
+            <div class="form-group">
+              <label class="form-label" for="regStatus">
+                Status Kepegawaian <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="7"></circle>
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                  </svg>
+                </span>
+                <select id="regStatus" class="form-select" required>
+                  <option value="" disabled selected>Pilih Status Kepegawaian</option>
+                  <option value="PNS / Guru Tetap">PNS / Guru Tetap</option>
+                  <option value="PPPK">PPPK</option>
+                  <option value="Guru Tidak Tetap (GTT) / Honorer">Guru Tidak Tetap (GTT) / Honorer</option>
+                  <option value="Guru Yayasan">Guru Yayasan</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 6. Unit Sekolah -->
+            <div class="form-group">
+              <label class="form-label" for="regSchool">
+                Unit Sekolah <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  </svg>
+                </span>
+                <input type="text" id="regSchool" class="form-input" value="SMP Negeri 1 Surabaya" required />
+              </div>
+            </div>
+
+            <!-- 7. Email Kedinasan -->
+            <div class="form-group">
+              <label class="form-label" for="regEmail">
+                Email Kedinasan / Aktif <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </span>
+                <input type="email" id="regEmail" class="form-input" placeholder="nama.guru@sekolah.sch.id" required />
+              </div>
+            </div>
+
+            <!-- 8. Nomor WhatsApp / Telepon -->
+            <div class="form-group">
+              <label class="form-label" for="regPhone">
+                Nomor WhatsApp / HP <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                </span>
+                <input type="tel" id="regPhone" class="form-input" placeholder="081234567890" required />
+              </div>
+            </div>
+
+            <!-- 9. Pas Foto Profil (Full Row) -->
+            <div class="form-group full">
+              <label class="form-label">Pas Foto Profil Guru <span class="req">*</span></label>
+              <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" />
+              <div class="avatar-upload-box" id="btnUploadPhoto" onclick="document.getElementById('regPhotoInput').click()">
+                <div class="avatar-preview-circle">
+                  <img id="regPhotoPreview" src="" alt="Foto Guru" />
+                  <svg id="regPhotoPlaceholder" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                </div>
+                <div class="avatar-upload-info">
+                  <div class="avatar-upload-title" id="avatarTitleText">Klik untuk Mengunggah Pas Foto</div>
+                  <div class="avatar-upload-sub" id="avatarSubText">Format JPG atau PNG formal latar merah/biru</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 10. Password -->
+            <div class="form-group">
+              <label class="form-label" for="regPassword">
+                Buat Password <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input type="password" id="regPassword" class="form-input" placeholder="Minimal 6 karakter" required />
+                <button type="button" class="btn-pwd-toggle" id="toggleRegPwd1" title="Lihat password">👁️</button>
+              </div>
+            </div>
+
+            <!-- 11. Konfirmasi Password -->
+            <div class="form-group">
+              <label class="form-label" for="regPasswordConfirm">
+                Konfirmasi Password <span class="req">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input type="password" id="regPasswordConfirm" class="form-input" placeholder="Ulangi password" required />
+                <button type="button" class="btn-pwd-toggle" id="toggleRegPwd2" title="Lihat password">👁️</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Declaration -->
+          <label class="terms-box" for="regDeclare">
+            <input type="checkbox" id="regDeclare" required />
+            <span>Saya menyatakan bahwa seluruh data yang diisi adalah benar data pendidik resmi dan memahami bahwa akun ini memerlukan persetujuan Administrator sebelum dapat digunakan.</span>
+          </label>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-register-submit" id="btnSubmitReg">
+            <span>Kirim Pendaftaran Akun Guru</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+
+      </div>
+
+      <!-- ─── SUCCESS / PENDING APPROVAL PANEL ─── -->
+      <div class="success-panel" id="successPanel">
+        <div class="pending-icon-anim">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h2 class="pending-title">Pendaftaran Berhasil Dikirim!</h2>
+        <p class="pending-desc">
+          Terima kasih <b id="successGuruName">Ibu Guru</b>. Berkas pendaftaran akun Anda telah tercatat ke dalam sistem presensi dan saat ini sedang menunggu proses verifikasi dan persetujuan (<b>ACC</b>) dari <b>Administrator Sekolah / Kepala Sekolah</b>.
+        </p>
+
+        <div class="status-pill-badge">
+          <span>⏳</span> Status: <b>Menunggu Persetujuan Admin (Pending)</b>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 14px 20px; width: 100%; max-width: 480px; margin-bottom: 24px; text-align: left; font-size: 12.5px; line-height: 1.5; color: #cbd5e1;">
+          <div><b>ID Registrasi:</b> <span id="successRegId" style="font-family:monospace; color:#34d399; font-weight:800;">REG-2026-0042</span></div>
+          <div><b>NIP:</b> <span id="successNip">19890412 201402 2 003</span></div>
+          <div><b>Unit Sekolah:</b> SMP Negeri 1 Surabaya</div>
+          <div style="margin-top: 6px; font-size: 11.5px; color: #94a3b8;">*Anda dapat mencoba login setelah Admin mengaktifkan akun Anda.</div>
+        </div>
+
+        <a href="login.html" class="btn-return-login">
+          ← Kembali ke Halaman Login
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let uploadedPhotoUrl = null;
+
+    // Password visibility toggles
+    const pwd1 = document.getElementById('regPassword');
+    const pwd2 = document.getElementById('regPasswordConfirm');
+
+    document.getElementById('toggleRegPwd1').addEventListener('click', () => {
+      pwd1.type = pwd1.type === 'password' ? 'text' : 'password';
+    });
+
+    document.getElementById('toggleRegPwd2').addEventListener('click', () => {
+      pwd2.type = pwd2.type === 'password' ? 'text' : 'password';
+    });
+
+    // Photo file upload
+    const photoInput = document.getElementById('regPhotoInput');
+    const photoPreview = document.getElementById('regPhotoPreview');
+    const photoPlaceholder = document.getElementById('regPhotoPlaceholder');
+    const avatarTitleText = document.getElementById('avatarTitleText');
+    const avatarSubText = document.getElementById('avatarSubText');
+
+    photoInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        uploadedPhotoUrl = e.target.result;
+        photoPreview.src = uploadedPhotoUrl;
+        photoPreview.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        avatarTitleText.textContent = file.name;
+        avatarSubText.textContent = (file.size / 1024).toFixed(1) + ' KB - Siap Digunakan';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Handle Form Submit
+    const regForm = document.getElementById('regForm');
+    const btnSubmitReg = document.getElementById('btnSubmitReg');
+    const formContainer = document.getElementById('registerFormContainer');
+    const successPanel = document.getElementById('successPanel');
+
+    regForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('regName').value.trim();
+      const nip = document.getElementById('regNip').value.trim();
+      const nuptk = document.getElementById('regNuptk').value.trim();
+      const mapel = document.getElementById('regMapel').value.trim();
+      const status = document.getElementById('regStatus').value;
+      const school = document.getElementById('regSchool').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const password = pwd1.value;
+      const confirmPwd = pwd2.value;
+      const declareChecked = document.getElementById('regDeclare').checked;
+
+      if (!name || !nip || !mapel || !status || !email || !password) {
+        alert('Mohon lengkapi semua kolom formulir wajib bertanda (*)!');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('Password minimal 6 karakter!');
+        return;
+      }
+
+      if (password !== confirmPwd) {
+        alert('Konfirmasi password tidak cocok! Pastikan kedua password sama.');
+        return;
+      }
+
+      if (!declareChecked) {
+        alert('Harap centang pernyataan persetujuan terlebih dahulu.');
+        return;
+      }
+
+      btnSubmitReg.disabled = true;
+      btnSubmitReg.innerHTML = 'Mengirim Permohonan Registrasi...';
+
+      const regId = 'REG-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-4);
+
+      const newTeacherAccount = {
+        id: regId,
+        name: name,
+        nip: nip,
+        nuptk: nuptk || '-',
+        mapel: mapel,
+        status: status,
+        school: school,
+        email: email,
+        phone: phone,
+        password: password,
+        photo: uploadedPhotoUrl || 'assets/img/profile-diah.jpg',
+        accountStatus: 'pending_approval', // Wajib di-ACC oleh Admin
+        registeredAt: new Date().toISOString()
+      };
+
+      // Save to localStorage so login page can detect pending status
+      const existingRegistered = JSON.parse(localStorage.getItem('registered_teachers') || '[]');
+      existingRegistered.push(newTeacherAccount);
+      localStorage.setItem('registered_teachers', JSON.stringify(existingRegistered));
+
+      setTimeout(function () {
+        formContainer.style.display = 'none';
+        successPanel.classList.add('show');
+        document.getElementById('successGuruName').textContent = name;
+        document.getElementById('successRegId').textContent = regId;
+        document.getElementById('successNip').textContent = nip;
+      }, 1200);
+    });
+  </script>
+</body>
+</html>

@@ -222,13 +222,39 @@ loginForm.addEventListener('submit', function (e) {
     'diah':          { pass: '1234',       role: 'Admin',         redirect: 'dashboard-admin.html' },
   };
 
-  setTimeout(function () {
-    const username = usernameEl.value.trim().toLowerCase();
+    const rawUsername = usernameEl.value.trim();
+    const username = rawUsername.toLowerCase();
     const password = passwordEl.value;
     const account  = DEMO_ACCOUNTS[username];
 
     btnLogin.classList.remove('loading');
     btnLogin.disabled = false;
+
+    // Check newly registered teacher accounts from localStorage
+    const registeredTeachers = JSON.parse(localStorage.getItem('registered_teachers') || '[]');
+    const matchedRegistered = registeredTeachers.find(function (t) {
+      return (t.nip === rawUsername || t.email.toLowerCase() === username || t.name.toLowerCase().includes(username));
+    });
+
+    if (matchedRegistered) {
+      if (matchedRegistered.accountStatus === 'pending_approval') {
+        showAlert(`⚠️ Akun Anda (${matchedRegistered.name}) sedang dalam proses verifikasi dan belum di-ACC oleh Admin Sekolah. Silakan tunggu konfirmasi Administrator.`, 'error');
+        return;
+      }
+      if (matchedRegistered.password === password) {
+        showAlert('Login berhasil! Mengarahkan ke dashboard...', 'success');
+        sessionStorage.setItem('presensi_user', JSON.stringify({
+          username: matchedRegistered.nip,
+          name:     matchedRegistered.name,
+          role:     'Guru',
+          loginAt:  new Date().toISOString()
+        }));
+        setTimeout(function () {
+          window.location.href = 'dashboard-guru.html';
+        }, 1200);
+        return;
+      }
+    }
 
     if (account && account.pass === password) {
       showAlert('Login berhasil! Mengarahkan ke dashboard...', 'success');
@@ -240,7 +266,7 @@ loginForm.addEventListener('submit', function (e) {
       }));
       /* Redirect after short delay */
       setTimeout(function () {
-        window.location.href = account.redirect;
+        window.location.href = account.redirect === 'dashboard-admin.html' ? 'dashboard-guru.html' : account.redirect;
       }, 1200);
     } else {
       showAlert('Username / NIP atau password salah. Silakan coba lagi.');
